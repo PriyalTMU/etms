@@ -3,16 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Organizer login · ETMS</title>
+  <title>Student login · ETMS</title>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-  <header class="topbar"><div class="inner"><a class="brand" href="/">ETMS <span>Campus Events</span></a></div></header>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/">ETMS <span>Campus Events</span></a>
+    <div class="who" id="site-who"></div>
+  </div></header>
+
   <main class="container narrow">
     <section class="card">
-      <h1>Organizer login</h1>
-      <p class="subtitle">Log in with your club organizer account to manage events.</p>
+      <h1>Student login</h1>
+      <p class="subtitle">Log in to your attendee account.</p>
 
+      <div id="created-msg" class="alert success" role="status" hidden>Your account was created. You can log in now.</div>
       <div id="login-error" class="alert error" role="alert" hidden></div>
 
       <form id="login-form" novalidate>
@@ -29,12 +34,15 @@
         </div>
       </form>
 
-      <div class="demo-box">
-        Demo organizer: <code>organizer@etms.test</code> / <code>Organizer123!</code><br>
-        Student? <a href="/login">Student login</a>
-      </div>
+      <p class="demo-box">
+        New here? <a href="/signup">Create an account</a><br>
+        Demo student: <code>student@etms.test</code> / <code>Student123!</code><br>
+        Club organizer? <a href="/organizer/login">Organizer login</a>
+      </p>
     </section>
   </main>
-  <script src="/js/organizer-login.js"></script>
+
+  <script src="/js/site-common.js"></script>
+  <script src="/js/student-login.js"></script>
 </body>
 </html>

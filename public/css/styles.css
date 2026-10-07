@@ -97,4 +97,4 @@ input:focus, textarea:focus { outline: 2px solid #9db4f5; border-color: var(--pr
 .details-grid dt { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
 .details-grid dd { margin: 2px 0 0; font-weight: 600; overflow-wrap: anywhere; }
 .description { white-space: pre-line; overflow-wrap: anywhere; margin: 0; }
-.home-grid .btn + .btn { margin-left: 8px; }
+
