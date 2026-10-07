@@ -12,7 +12,8 @@
     "dev": "node --disable-warning=ExperimentalWarning --watch src/server.js",
     "seed": "node --disable-warning=ExperimentalWarning src/db/seed.js",
     "reset-db": "node --disable-warning=ExperimentalWarning src/db/seed.js --reset",
-    "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"tests/**/*.test.js\""
+    "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"tests/**/*.test.js\"",
+    "demo": "npm run reset-db && npm start"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

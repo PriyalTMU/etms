@@ -50,9 +50,10 @@ The first time the server starts it creates `data/etms.db` and fills it with dem
 |---|---|
 | `npm start` | Run the server |
 | `npm run dev` | Run the server and restart on file changes |
-| `npm test` | Run all automated tests (uses an in-memory DB, does not touch your data) |
+| `npm test` | Run all 127 automated tests (uses an in-memory DB, does not touch your data) |
 | `npm run seed` | Add demo data if the database is empty |
 | `npm run reset-db` | Delete the local database and re-create the demo data |
+| `npm run demo` | Reset to clean demo data, then start the server (use before presenting) |
 
 ## Project structure
 
@@ -106,6 +107,12 @@ Pages: `/signup` (create student account), `/login` (student login), `/organizer
 - One branch per story: `feature/US08-create-event`, `fix/...` for bugs.
 - `git pull` before starting work, commit small and often, run `npm test` before opening a PR.
 - Open a Pull Request into `main`, a teammate reviews, then merge.
+
+## Sprint 1 documents
+
+- [`docs/SPRINT1-TEST-REPORT.md`](docs/SPRINT1-TEST-REPORT.md) – story-level, end-to-end and NFR test results, defects found and fixed
+- [`docs/DEMO-SCRIPT.md`](docs/DEMO-SCRIPT.md) – step-by-step Sprint 1 demo with who presents what
+- `docs/screenshots/` – backup screenshots of the demo flow
 
 ## Sprint 1 progress
 
