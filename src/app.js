@@ -10,6 +10,7 @@ const { createAuthRoutes } = require('./routes/authRoutes');
 const { createEventRoutes } = require('./routes/eventRoutes');
 const { createPageRoutes } = require('./routes/pageRoutes');
 const { createPublicEventRoutes } = require('./routes/publicEventRoutes');
+const { createStudentRoutes } = require('./routes/studentRoutes');
 
 /**
  * @param {object} options
@@ -49,6 +50,7 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
   if (beforeRoutes) beforeRoutes(app, { users, events });
 
   app.use('/api', createAuthRoutes({ users }));
+  app.use('/api', createStudentRoutes({ users }));
   app.use('/api', createEventRoutes({ events }));
   app.use('/api', createPublicEventRoutes({ events, now }));
   app.use(createPageRoutes());
