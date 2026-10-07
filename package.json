@@ -1,0 +1,25 @@
+{
+  "name": "etms",
+  "version": "0.1.0",
+  "description": "Event Ticket Management System (ETMS) for on-campus student events - CPS714 Sec05 Team03",
+  "main": "src/server.js",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/server.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch src/server.js",
+    "seed": "node --disable-warning=ExperimentalWarning src/db/seed.js",
+    "reset-db": "node --disable-warning=ExperimentalWarning src/db/seed.js --reset",
+    "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 \"tests/**/*.test.js\""
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.1"
+  }
+}
