@@ -33,7 +33,9 @@
     if (!who) return;
     if (d.user) {
       who.appendChild(ETMS.el('span', 'role-badge', d.user.role));
-      who.appendChild(ETMS.el('span', null, d.user.name));
+      var nm = ETMS.el('span', null, d.user.name);
+      nm.id = 'who-name';
+      who.appendChild(nm);
       if (d.user.role === 'organizer') {
         var a = ETMS.el('a', null, 'Organizer dashboard');
         a.href = '/organizer';
@@ -46,6 +48,9 @@
       });
       who.appendChild(b);
     } else {
+      var login = ETMS.el('a', null, 'Student login');
+      login.href = '/login';
+      who.appendChild(login);
       var link = ETMS.el('a', null, 'Organizer login');
       link.href = '/organizer/login';
       who.appendChild(link);

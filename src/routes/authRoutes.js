@@ -23,6 +23,7 @@ function createAuthRoutes({ users }) {
     if (user.role !== ROLES.ORGANIZER) {
       return res.status(403).json({
         error: 'This account is not an organizer account. Students should use the student login.',
+        studentLogin: '/login',
       });
     }
 

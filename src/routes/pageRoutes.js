@@ -26,6 +26,15 @@ function createPageRoutes() {
     res.sendFile(path.join(PAGES, 'organizer', 'create-event.html'));
   });
 
+  // Student account pages (US01, US02). Already-logged-in students go straight to the event list.
+  const studentRedirect = (file) => (req, res) => {
+    const user = currentUser(req);
+    if (user && user.role === ROLES.STUDENT) return res.redirect('/events');
+    res.sendFile(path.join(PAGES, 'student', file));
+  };
+  router.get('/signup', studentRedirect('signup.html'));
+  router.get('/login', studentRedirect('login.html'));
+
   // Attendee event pages (US12, US14, US15). Open to everyone so students can browse;
   // the data comes from the public /api/events endpoints.
   router.get('/events', (req, res) => {
