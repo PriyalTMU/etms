@@ -85,14 +85,17 @@ etms/
 | `POST /api/auth/logout` | logged in | Ends the session |
 | `POST /api/events` | organizer | Create an event `{ title, description, date (YYYY-MM-DD), time (HH:MM), location, capacity }`. Returns `201 { event }` or `400 { error, errors: { field: message } }` |
 | `GET /api/organizer/events` | organizer | Events created by the logged-in organizer |
+| `GET /api/events` | anyone | Upcoming events (later dates, or today with a start time still ahead), soonest first |
+| `GET /api/events/:id` | anyone | Full details of one event, or `404 { error: 'Event not found.' }` |
 
-Pages: `/organizer/login`, `/organizer` (dashboard), `/organizer/events/new` (create event).
+Pages: `/organizer/login`, `/organizer` (dashboard), `/organizer/events/new` (create event),
+`/events` (upcoming event list), `/events/:id` (event details).
 
 ### Adding to this (for the other Sprint 1 stories)
 
 - **Student account / login (US01–US03):** `userModel.create({ ..., role: 'student' })` and `userModel.authenticate(email, password)` already exist. Log a student in by setting `req.session.user = user` (see `authRoutes.js`).
 - **Protecting a route:** `router.get('/something', requireRole('organizer'), handler)` for APIs, or `requireRolePage('student', '/login')` for pages.
-- **Event list / details (US12–US15):** `eventModel.listUpcoming(todayYYYYMMDD)` and `eventModel.findById(id)` already exist.
+- **Event list / details (US12–US15):** built – see `src/routes/publicEventRoutes.js`, `src/pages/events/` and `public/js/event-list.js`, `event-details.js`. The list and details pages are open to everyone; once student login (US02) is merged they can be limited to students with `requireRolePage('student', '/login')` if the team wants.
 - Add a test file in `tests/` for each story (copy the pattern in `tests/helpers.js`).
 
 ## Git workflow (agreed T07)
@@ -102,7 +105,7 @@ Pages: `/organizer/login`, `/organizer` (dashboard), `/organizer/events/new` (cr
 - `git pull` before starting work, commit small and often, run `npm test` before opening a PR.
 - Open a Pull Request into `main`, a teammate reviews, then merge.
 
-## Sprint 1 progress – Priyal's stories
+## Sprint 1 progress
 
 | Story | Tasks | Acceptance criteria → how it is met | Tests |
 |---|---|---|---|
@@ -110,5 +113,10 @@ Pages: `/organizer/login`, `/organizer` (dashboard), `/organizer/events/new` (cr
 | **US06 Organizer-only functions** | T17 | Logged-in organizer reaches dashboard, create-event page and organizer APIs · students get **403 Access denied** on organizer pages and APIs; logged-out users are redirected to login | `tests/us06-organizer-only.test.js` |
 | **US08 Create event** | T18, T10 | Form has title, description, date, time, location, maximum capacity · *Create event* submits to `POST /api/events`, which stores it and shows it on the dashboard | `tests/us08-create-event.test.js` |
 | **US09 Event validation** | T19 | All six fields required (blank/whitespace rejected) · rejects past dates, impossible dates, bad times, capacity that is 0 / negative / decimal / text / > 5000, over-long text · clear message per field + summary box; checked in browser **and** on the server with the same rules | `tests/us09-event-validation.test.js` |
+
+| **US10 Save event** | T20 | Valid events are inserted into the `events` table · still there after navigating away and after a server restart (saved to the DB file) · every stored field matches what was submitted | `tests/us10-save-event.test.js` |
+| **US12 Upcoming event list** | T21 | `/events` page (linked from the home page) · `GET /api/events` returns upcoming events only, soonest first, from every club · newly saved events appear | `tests/us12-upcoming-events.test.js` |
+| **US14 Select event** | T24 | Each event card links to `/events/<id>` · the selected event's own data is loaded by id · bad / unknown ids show "Event not found." instead of another event | `tests/us14-select-event.test.js` |
+| **US15 Event details** | T25 | Details page shows title, description, date, time, location, capacity (and hosting club) · values come straight from the saved event | `tests/us15-event-details.test.js` |
 
 Validation rules: title 3–100 characters; description up to 2000; location up to 150; date must be a real calendar date, today or later (and if today, the time must still be ahead); time `HH:MM` 24-hour; capacity a whole number from 1 to 5000.

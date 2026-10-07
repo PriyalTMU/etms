@@ -12,11 +12,12 @@ const STUDENT = { email: 'student@etms.test', password: 'Student123!' };
  * Fresh app + in-memory database for each test file.
  * Adds a TEST-ONLY route to log a student in, because student login (US02) is a separate story.
  */
-function makeTestApp() {
-  const db = openDatabase(':memory:');
-  seedIfEmpty(db);
+function makeTestApp({ dbPath = ':memory:', seed = true, now } = {}) {
+  const db = openDatabase(dbPath);
+  if (seed) seedIfEmpty(db);
   const app = createApp({
     db,
+    now,
     sessionSecret: 'test-secret',
     beforeRoutes(appRef, { users }) {
       appRef.post('/__test__/login-as', (req, res) => {

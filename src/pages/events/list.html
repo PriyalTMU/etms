@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Upcoming events · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/">ETMS <span>Campus Events</span></a>
+    <div class="who" id="site-who"></div>
+  </div></header>
+
+  <main class="container">
+    <h1>Upcoming campus events</h1>
+    <p class="subtitle">Pick an event to see the full details.</p>
+
+    <div id="list-error" class="alert error" role="alert" hidden></div>
+    <p class="empty" id="loading">Loading events…</p>
+    <ul class="event-list" id="event-list" aria-label="Upcoming events"></ul>
+    <p class="empty" id="no-events" hidden>There are no upcoming events right now. Check back soon.</p>
+  </main>
+
+  <script src="/js/site-common.js"></script>
+  <script src="/js/event-list.js"></script>
+</body>
+</html>
