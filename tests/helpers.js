@@ -8,10 +8,7 @@ const ORGANIZER = { email: 'organizer@etms.test', password: 'Organizer123!' };
 const ORGANIZER_2 = { email: 'robotics@etms.test', password: 'Organizer123!' };
 const STUDENT = { email: 'student@etms.test', password: 'Student123!' };
 
-/**
- * Fresh app + in-memory database for each test file.
- * Adds a TEST-ONLY route to log a student in, because student login (US02) is a separate story.
- */
+/** Fresh app + in-memory database (or a file DB) for a test. */
 function makeTestApp({ dbPath = ':memory:', seed = true, now } = {}) {
   const db = openDatabase(dbPath);
   if (seed) seedIfEmpty(db);
@@ -19,14 +16,6 @@ function makeTestApp({ dbPath = ':memory:', seed = true, now } = {}) {
     db,
     now,
     sessionSecret: 'test-secret',
-    beforeRoutes(appRef, { users }) {
-      appRef.post('/__test__/login-as', (req, res) => {
-        const user = users.authenticate(req.body.email, req.body.password);
-        if (!user) return res.status(401).end();
-        req.session.user = user;
-        res.json({ user });
-      });
-    },
   });
   return { app, db };
 }
@@ -38,10 +27,21 @@ async function loginOrganizer(app, creds = ORGANIZER) {
   return agent;
 }
 
-async function loginStudent(app) {
+/** Logs in through the real student login (US02). */
+async function loginStudent(app, creds = STUDENT) {
   const agent = request.agent(app);
-  await agent.post('/__test__/login-as').send(STUDENT).expect(200);
+  await agent.post('/api/students/login').send(creds).expect(200);
   return agent;
+}
+
+function validSignup(overrides = {}) {
+  return {
+    name: 'Jordan Lee',
+    email: 'jordan.lee@torontomu.ca',
+    password: 'Campus2026',
+    confirmPassword: 'Campus2026',
+    ...overrides,
+  };
 }
 
 function daysFromNow(n) {
@@ -62,4 +62,4 @@ function validEvent(overrides = {}) {
   };
 }
 
-module.exports = { makeTestApp, loginOrganizer, loginStudent, validEvent, daysFromNow, ORGANIZER, ORGANIZER_2, STUDENT, request };
+module.exports = { makeTestApp, loginOrganizer, loginStudent, validEvent, validSignup, daysFromNow, ORGANIZER, ORGANIZER_2, STUDENT, request };
