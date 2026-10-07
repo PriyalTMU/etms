@@ -31,6 +31,9 @@
         meta.appendChild(el('span', null, ev.location));
         meta.appendChild(el('span', null, 'Capacity: ' + ev.capacity));
         li.appendChild(meta);
+        var view = el('a', 'view-link', 'View as students see it →');
+        view.href = '/events/' + encodeURIComponent(ev.id);
+        li.appendChild(view);
         list.appendChild(li);
         if (ev.id === createdId) {
           banner.textContent = 'Event "' + ev.title + '" was created.';

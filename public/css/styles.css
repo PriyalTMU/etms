@@ -98,3 +98,8 @@ input:focus, textarea:focus { outline: 2px solid #9db4f5; border-color: var(--pr
 .details-grid dd { margin: 2px 0 0; font-weight: 600; overflow-wrap: anywhere; }
 .description { white-space: pre-line; overflow-wrap: anywhere; margin: 0; }
 
+
+/* T29 defect D1: long unbroken titles / locations must wrap on small screens */
+h1, h2, h3, .event-meta span, .event-item h3, .alert, .field-error, .who span { overflow-wrap: anywhere; }
+.event-meta { min-width: 0; }
+.event-meta span { min-width: 0; max-width: 100%; }
