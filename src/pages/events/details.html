@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Event details · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/">ETMS <span>Campus Events</span></a>
+    <div class="who" id="site-who"></div>
+  </div></header>
+
+  <main class="container" style="max-width: 760px">
+    <p><a href="/events">&larr; Back to all events</a></p>
+
+    <div id="details-error" class="alert error" role="alert" hidden></div>
+    <p class="empty" id="loading">Loading event…</p>
+
+    <article class="card" id="event-details" hidden>
+      <p class="club" id="ev-club"></p>
+      <h1 id="ev-title"></h1>
+      <dl class="details-grid">
+        <div><dt>Date</dt><dd id="ev-date"></dd></div>
+        <div><dt>Time</dt><dd id="ev-time"></dd></div>
+        <div><dt>Location</dt><dd id="ev-location"></dd></div>
+        <div><dt>Capacity</dt><dd id="ev-capacity"></dd></div>
+      </dl>
+      <h2>About this event</h2>
+      <p class="description" id="ev-description"></p>
+    </article>
+  </main>
+
+  <script src="/js/site-common.js"></script>
+  <script src="/js/event-details.js"></script>
+</body>
+</html>
