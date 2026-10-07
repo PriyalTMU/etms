@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Organizer dashboard · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/organizer">ETMS <span>Organizer</span></a>
+    <div class="who"><span class="role-badge">Organizer</span><span id="who-name"></span>
+      <button class="btn link" id="logout-btn" type="button">Log out</button></div>
+  </div></header>
+
+  <main class="container">
+    <div class="page-head">
+      <div>
+        <h1>Event management</h1>
+        <p class="subtitle">Create events for your club. Students will see upcoming events in the event list.</p>
+      </div>
+      <a class="btn" href="/organizer/events/new" id="create-event-link">+ Create event</a>
+    </div>
+
+    <div id="created-banner" class="alert success" role="status" hidden></div>
+
+    <section class="card">
+      <h2>Your events</h2>
+      <ul class="event-list" id="event-list"></ul>
+      <p class="empty" id="no-events" hidden>You have not created any events yet.</p>
+    </section>
+  </main>
+
+  <script src="/js/organizer-common.js"></script>
+  <script src="/js/organizer-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Organizer login · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner"><a class="brand" href="/">ETMS <span>Campus Events</span></a></div></header>
+  <main class="container narrow">
+    <section class="card">
+      <h1>Organizer login</h1>
+      <p class="subtitle">Log in with your club organizer account to manage events.</p>
+
+      <div id="login-error" class="alert error" role="alert" hidden></div>
+
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="actions">
+          <button class="btn" type="submit" id="login-btn">Log in</button>
+        </div>
+      </form>
+
+      <div class="demo-box">
+        Demo organizer: <code>organizer@etms.test</code> / <code>Organizer123!</code>
+      </div>
+    </section>
+  </main>
+  <script src="/js/organizer-login.js"></script>
+</body>
+</html>
