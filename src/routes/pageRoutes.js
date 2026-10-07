@@ -26,6 +26,16 @@ function createPageRoutes() {
     res.sendFile(path.join(PAGES, 'organizer', 'create-event.html'));
   });
 
+  // Attendee event pages (US12, US14, US15). Open to everyone so students can browse;
+  // the data comes from the public /api/events endpoints.
+  router.get('/events', (req, res) => {
+    res.sendFile(path.join(PAGES, 'events', 'list.html'));
+  });
+
+  router.get('/events/:id', (req, res) => {
+    res.sendFile(path.join(PAGES, 'events', 'details.html'));
+  });
+
   return router;
 }
 

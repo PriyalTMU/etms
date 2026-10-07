@@ -9,14 +9,16 @@ const { createEventModel } = require('./models/eventModel');
 const { createAuthRoutes } = require('./routes/authRoutes');
 const { createEventRoutes } = require('./routes/eventRoutes');
 const { createPageRoutes } = require('./routes/pageRoutes');
+const { createPublicEventRoutes } = require('./routes/publicEventRoutes');
 
 /**
  * @param {object} options
  * @param {import('node:sqlite').DatabaseSync} options.db
  * @param {string} options.sessionSecret
  * @param {(app: express.Express, models: object) => void} [options.beforeRoutes] hook used by tests
+ * @param {() => Date} [options.now] clock used to decide which events are upcoming (tests can fix it)
  */
-function createApp({ db, sessionSecret, beforeRoutes } = {}) {
+function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
   if (!db) throw new Error('createApp needs a database');
   const users = createUserModel(db);
   const events = createEventModel(db);
@@ -48,6 +50,7 @@ function createApp({ db, sessionSecret, beforeRoutes } = {}) {
 
   app.use('/api', createAuthRoutes({ users }));
   app.use('/api', createEventRoutes({ events }));
+  app.use('/api', createPublicEventRoutes({ events, now }));
   app.use(createPageRoutes());
 
   // Static files: public pages, CSS, JS, and the shared validator for the browser.

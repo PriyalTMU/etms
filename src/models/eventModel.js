@@ -28,9 +28,11 @@ function createEventModel(db) {
   const byOrganizerStmt = db.prepare(
     `SELECT * FROM events WHERE organizer_id = ? ORDER BY event_date, event_time`
   );
+  // Upcoming = a later date, or today with a start time that has not passed yet.
   const upcomingStmt = db.prepare(
     `SELECT e.*, u.club_name FROM events e JOIN users u ON u.id = e.organizer_id
-     WHERE e.event_date >= ? ORDER BY e.event_date, e.event_time`
+     WHERE e.event_date > ? OR (e.event_date = ? AND e.event_time > ?)
+     ORDER BY e.event_date, e.event_time, e.id`
   );
 
   return {
@@ -48,9 +50,13 @@ function createEventModel(db) {
       return byOrganizerStmt.all(organizerId).map(toEvent);
     },
 
-    /** Events on or after the given date (YYYY-MM-DD). For the attendee event list (US12). */
-    listUpcoming(fromDate) {
-      return upcomingStmt.all(fromDate).map(toEvent);
+    /**
+     * T21 / US12: upcoming events, soonest first.
+     * @param {string} today YYYY-MM-DD
+     * @param {string} [nowTime] HH:MM - events today at or before this time are left out
+     */
+    listUpcoming(today, nowTime = '00:00') {
+      return upcomingStmt.all(today, today, nowTime).map(toEvent);
     },
   };
 }
