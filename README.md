@@ -80,6 +80,8 @@ etms/
 
 | Method & path | Who | What |
 |---|---|---|
+| `POST /api/students/signup` | anyone | `{ name, email, password, confirmPassword }` → creates a **student** account. `201`, `400 { errors }` or `409` if the email is taken |
+| `POST /api/students/login` | anyone | `{ email, password }` → logs in a **student** account (`401` for wrong email/password) |
 | `POST /api/organizer/login` | anyone | `{ email, password }` → logs in an **organizer** account |
 | `GET /api/auth/me` | anyone | The logged-in user (`{ id, name, email, role, clubName }`) or `null` |
 | `POST /api/auth/logout` | logged in | Ends the session |
@@ -88,12 +90,12 @@ etms/
 | `GET /api/events` | anyone | Upcoming events (later dates, or today with a start time still ahead), soonest first |
 | `GET /api/events/:id` | anyone | Full details of one event, or `404 { error: 'Event not found.' }` |
 
-Pages: `/organizer/login`, `/organizer` (dashboard), `/organizer/events/new` (create event),
+Pages: `/signup` (create student account), `/login` (student login), `/organizer/login`, `/organizer` (dashboard), `/organizer/events/new` (create event),
 `/events` (upcoming event list), `/events/:id` (event details).
 
 ### Adding to this (for the other Sprint 1 stories)
 
-- **Student account / login (US01–US03):** `userModel.create({ ..., role: 'student' })` and `userModel.authenticate(email, password)` already exist. Log a student in by setting `req.session.user = user` (see `authRoutes.js`).
+- **Student account / login (US01–US03):** built – see `src/routes/studentRoutes.js`, `src/shared/accountValidation.js`, `src/pages/student/` and `public/js/student-*.js`.
 - **Protecting a route:** `router.get('/something', requireRole('organizer'), handler)` for APIs, or `requireRolePage('student', '/login')` for pages.
 - **Event list / details (US12–US15):** built – see `src/routes/publicEventRoutes.js`, `src/pages/events/` and `public/js/event-list.js`, `event-details.js`. The list and details pages are open to everyone; once student login (US02) is merged they can be limited to students with `requireRolePage('student', '/login')` if the team wants.
 - Add a test file in `tests/` for each story (copy the pattern in `tests/helpers.js`).
@@ -109,6 +111,10 @@ Pages: `/organizer/login`, `/organizer` (dashboard), `/organizer/events/new` (cr
 
 | Story | Tasks | Acceptance criteria → how it is met | Tests |
 |---|---|---|---|
+| **US01 Create attendee account** | T13 | `/signup` form (name, email, password, confirm) · every field required and checked in browser + server (valid email, password 8+ chars with a letter and a number, passwords match) · account stored with bcrypt-hashed password and role `student` · duplicate email (any capitalisation) rejected with a clear message | `tests/us01-create-account.test.js` |
+| **US02 Student login** | T14 | `/login` form · valid credentials start a student session · student is recognised on every attendee page (STUDENT badge + name in header, `/api/auth/me`) · login goes to the event list `/events` | `tests/us02-student-login.test.js` |
+| **US03 Invalid student login** | T15 | Wrong password / unknown email → no access, no session cookie · same clear message "Incorrect email or password. Please try again." · user stays logged out | `tests/us03-invalid-login.test.js` |
+| **US13 Event list information** | T22, T23 | Each card on `/events` shows title, date/time, location (and club) · values come from that event's own record and the card links to the same id | `tests/us13-event-list-info.test.js` |
 | **US05 Organizer login** | T16 | Organizer enters email + password on `/organizer/login` · valid credentials start an organizer session and open the dashboard · session stores `role: 'organizer'` (shown in header, returned by `/api/auth/me`) | `tests/us05-organizer-login.test.js` |
 | **US06 Organizer-only functions** | T17 | Logged-in organizer reaches dashboard, create-event page and organizer APIs · students get **403 Access denied** on organizer pages and APIs; logged-out users are redirected to login | `tests/us06-organizer-only.test.js` |
 | **US08 Create event** | T18, T10 | Form has title, description, date, time, location, maximum capacity · *Create event* submits to `POST /api/events`, which stores it and shows it on the dashboard | `tests/us08-create-event.test.js` |
