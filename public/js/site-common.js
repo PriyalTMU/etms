@@ -2,6 +2,12 @@
 (function () {
   window.ETMS = window.ETMS || {};
 
+  // If the browser restores this page from its back/forward cache (e.g. Back after logging out),
+  // reload it so the server checks the login again (T29 defect D2).
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) location.reload();
+  });
+
   function parts(date, time) {
     var d = date.split('-').map(Number);
     var t = (time || '00:00').split(':').map(Number);

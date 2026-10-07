@@ -39,6 +39,15 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
     })
   );
 
+  // Never let the browser cache API data or organizer pages, so pressing Back after
+  // logging out can't show someone's dashboard again (T29 defect D2).
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/organizer')) {
+      res.set('Cache-Control', 'no-store, private');
+    }
+    next();
+  });
+
   // API write requests must be JSON (blocks simple cross-site form posts).
   app.use('/api', (req, res, next) => {
     if (req.method === 'POST' && req.headers['content-length'] !== '0' && !req.is('application/json')) {
@@ -60,7 +69,7 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
   app.use(express.static(path.join(__dirname, '..', 'public')));
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
-  app.use((req, res) => res.status(404).type('text').send('Page not found'));
+  app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'pages', 'not-found.html')));
 
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
