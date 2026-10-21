@@ -45,6 +45,18 @@ function createPageRoutes() {
     res.sendFile(path.join(PAGES, 'events', 'details.html'));
   });
 
+  // Sprint 2 student ticket pages (US25-US28). Students only: logged-out visitors go to the
+  // student login and come back afterwards; organizers get the Access denied page.
+  const studentPage = requireRolePage(ROLES.STUDENT, '/login');
+  router.get('/my-tickets', studentPage, (req, res) => {
+    res.set('Cache-Control', 'no-store, private');
+    res.sendFile(path.join(PAGES, 'student', 'my-tickets.html'));
+  });
+  router.get('/tickets/:code', studentPage, (req, res) => {
+    res.set('Cache-Control', 'no-store, private');
+    res.sendFile(path.join(PAGES, 'student', 'ticket.html'));
+  });
+
   return router;
 }
 
