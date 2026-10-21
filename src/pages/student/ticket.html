@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My ticket · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/">ETMS <span>Campus Events</span></a>
+    <div class="who" id="site-who"></div>
+  </div></header>
+
+  <main class="container" style="max-width: 640px">
+    <p><a href="/my-tickets">&larr; All my tickets</a></p>
+
+    <div id="new-msg" class="alert success" role="status" hidden>You're registered! Your ticket is below. Show the QR code at the door.</div>
+    <div id="ticket-error" class="alert error" role="alert" hidden></div>
+    <p class="empty" id="loading">Loading ticket…</p>
+
+    <article class="card e-ticket" id="ticket" hidden>
+      <div class="ticket-head">
+        <p class="club" id="tk-club"></p>
+        <span class="status-pill" id="tk-status"></span>
+      </div>
+      <h1 id="tk-title"></h1>
+      <dl class="details-grid">
+        <div><dt>Date</dt><dd id="tk-date"></dd></div>
+        <div><dt>Time</dt><dd id="tk-time"></dd></div>
+        <div><dt>Location</dt><dd id="tk-location"></dd></div>
+        <div><dt>Ticket holder</dt><dd id="tk-holder"></dd></div>
+      </dl>
+      <div class="qr-wrap">
+        <img id="tk-qr" alt="QR code for this ticket" width="240" height="240">
+        <p class="ticket-code" id="tk-code"></p>
+        <p class="hint">Show this QR code (or read out the ticket code) at the event entrance.</p>
+      </div>
+      <div class="actions no-print">
+        <a class="btn secondary" id="tk-event-link" href="/events">View event details</a>
+        <button class="btn link" type="button" id="tk-print">Print ticket</button>
+      </div>
+    </article>
+  </main>
+
+  <script src="/js/site-common.js"></script>
+  <script src="/js/ticket.js"></script>
+</body>
+</html>

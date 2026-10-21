@@ -10,7 +10,7 @@
 
   function safeNext() {
     var next = params.get('next');
-    return next && /^\/events(\/|$)/.test(next) ? next : null;
+    return next && /^\/(events|my-tickets|tickets)(\/|$|\?)/.test(next) ? next : null;
   }
 
   function showError(msg) {

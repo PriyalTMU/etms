@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My tickets · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/">ETMS <span>Campus Events</span></a>
+    <div class="who" id="site-who"></div>
+  </div></header>
+
+  <main class="container">
+    <div class="page-head">
+      <div>
+        <h1>My tickets</h1>
+        <p class="subtitle">All of your event registrations in one place. Open a ticket to show its QR code at the door.</p>
+      </div>
+      <a class="btn secondary" href="/events">Browse events</a>
+    </div>
+
+    <div id="tickets-error" class="alert error" role="alert" hidden></div>
+    <p class="empty" id="loading">Loading your tickets…</p>
+    <ul class="event-list" id="ticket-list" aria-label="My tickets"></ul>
+    <div class="card empty-state" id="no-tickets" hidden>
+      <p>You don't have any tickets yet.</p>
+      <a class="btn" href="/events">Find an event</a>
+    </div>
+  </main>
+
+  <script src="/js/site-common.js"></script>
+  <script src="/js/my-tickets.js"></script>
+</body>
+</html>
