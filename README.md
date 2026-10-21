@@ -62,22 +62,23 @@ etms/
 ├── public/                  Public pages, CSS and browser JS (anyone can load these)
 │   ├── index.html
 │   ├── css/styles.css
-│   └── js/                  organizer-login.js, organizer-dashboard.js, create-event.js, organizer-common.js
+│   └── js/                  page scripts (event list/details, login, sign-up, organizer pages, my-tickets.js, ticket.js)
 ├── src/
 │   ├── server.js            Starts the app
 │   ├── app.js               Builds the Express app (used by server.js and the tests)
 │   ├── config.js            PORT, SESSION_SECRET, DB_PATH (from .env or defaults)
 │   ├── db/                  schema.sql, database.js (connection), seed.js (demo data)
-│   ├── models/              userModel.js, eventModel.js
+│   ├── models/              userModel.js, eventModel.js, ticketModel.js (Sprint 2)
 │   ├── middleware/auth.js   requireRole / requireRolePage (role-based access)
-│   ├── routes/              authRoutes.js, eventRoutes.js, pageRoutes.js
-│   ├── shared/              eventValidation.js – used by BOTH server and browser
-│   └── pages/organizer/     Organizer-only pages (only served through guarded routes)
+│   ├── routes/              auth, student, event, public event, registration + ticket (Sprint 2), page routes
+│   ├── shared/              eventValidation.js, accountValidation.js – used by BOTH server and browser
+│   ├── lib/                 ticketCode.js (unique ticket codes), ticketQr.js (QR codes) – server only
+│   └── pages/               organizer/, student/ (login, sign-up, my-tickets, ticket), events/ – served through routes
 ├── tests/                   One test file per user story
 └── data/                    Local SQLite database (git-ignored)
 ```
 
-## API (Sprint 1 so far)
+## API
 
 | Method & path | Who | What |
 |---|---|---|
@@ -89,7 +90,11 @@ etms/
 | `POST /api/events` | organizer | Create an event `{ title, description, date (YYYY-MM-DD), time (HH:MM), location, capacity }`. Returns `201 { event }` or `400 { error, errors: { field: message } }` |
 | `GET /api/organizer/events` | organizer | Events created by the logged-in organizer |
 | `GET /api/events` | anyone | Upcoming events (later dates, or today with a start time still ahead), soonest first |
-| `GET /api/events/:id` | anyone | Full details of one event, or `404 { error: 'Event not found.' }` |
+| `GET /api/events/:id` | anyone | Full details of one event, or `404 { error: 'Event not found.' }`. Event responses include `ticketsIssued`, `ticketsRemaining`, `isFull` (Sprint 2) |
+| `POST /api/events/:id/register` | student | Register for an event (Sprint 2). `201 { ticket, event, redirect }` · `401` logged out · `403` organizer · `404` · `400 EVENT_STARTED` · `409 EVENT_FULL` · `409 ALREADY_REGISTERED { ticketCode }` |
+| `GET /api/events/:id/registration` | anyone | What the details page should show: `{ role, ticketCode, isFull, ticketsRemaining, started }` |
+| `GET /api/my/tickets` | student | The logged-in student's tickets with event info, soonest first |
+| `GET /api/tickets/:code` | student (owner) | One ticket with event info and its QR code (`qrSvg`); anyone else gets `404 Ticket not found.` |
 
 Pages: `/signup` (create student account), `/login` (student login), `/organizer/login`, `/organizer` (dashboard), `/organizer/events/new` (create event),
 `/events` (upcoming event list), `/events/:id` (event details).
@@ -107,6 +112,31 @@ Pages: `/signup` (create student account), `/login` (student login), `/organizer
 - One branch per story: `feature/US08-create-event`, `fix/...` for bugs.
 - `git pull` before starting work, commit small and often, run `npm test` before opening a PR.
 - Open a Pull Request into `main`, a teammate reviews, then merge.
+
+## Sprint 2 documents
+
+- [`docs/SPRINT2-TEST-REPORT.md`](docs/SPRINT2-TEST-REPORT.md) – Sprint 2 story, end-to-end and browser test results, defects D7–D9
+- [`docs/DEMO-SCRIPT-SPRINT2.md`](docs/DEMO-SCRIPT-SPRINT2.md) – Sprint 2 demo for the Oct 21 lab
+- `docs/screenshots/sprint2/` – backup screenshots of the Sprint 2 flow (desktop and phone)
+
+## Sprint 2 progress
+
+Sprint Goal: students can register for a campus event and receive a ticket with a unique ID and QR code that they can find on a My Tickets page, while registration stops at capacity and duplicate registrations are blocked.
+
+| Story | Owner | Tasks | Acceptance criteria → how it is met | Tests |
+|---|---|---|---|---|
+| **US17 Register for an event** | Priyal | T34, T35 | *Register for this event* button on the details page · `POST /api/events/:id/register` issues a ticket · logged-out visitors are asked to log in, organizers can't register, started events are closed | `tests/us17-register-event.test.js` |
+| **US18 Registration saved to account** | Ravi | T32, T36 | Ticket row stores student + event · still there after logout/login and after a server restart | `tests/us18-registration-saved.test.js` |
+| **US19 Availability updates** | Ravi | T37 | "N of M tickets left" / "Event full" on list and details · goes down by one per registration | `tests/us19-ticket-availability.test.js` |
+| **US20 Stop at capacity** | Priyal | T38 | Capacity check + insert in one transaction · 12 simultaneous requests for 5 spots give exactly 5 tickets | `tests/us20-us21-capacity.test.js` |
+| **US21 Reject when full** | Priyal | T39 | `409` "Sorry, this event is full. No more tickets can be issued." · no ticket created · page shows a disabled *Event full* button | `tests/us20-us21-capacity.test.js` |
+| **US22 No duplicate registrations** | Priyal | T40 | Second registration refused with "You already have a ticket for this event." and a link to it · DB unique index backs it up | `tests/us22-duplicate-registration.test.js` |
+| **US23 Unique ticket identifier** | Ravi | T32, T41 | Random `ETMS-XXXX-XXXX-XXXX` code (crypto random, no look-alike characters) · UNIQUE in the database, retried on the rare repeat | `tests/us23-ticket-code.test.js` |
+| **US24 QR code on the ticket** | Ravi | T33, T42 | Server-side SVG QR code that encodes exactly the ticket code (no personal data) | `tests/us24-ticket-qr.test.js` |
+| **US25 View QR e-ticket** | Aneesa | T43 | After registering the student lands on `/tickets/<code>` with the QR code · only the owner can open it | `tests/us25-view-qr-ticket.test.js` |
+| **US26 My Tickets page** | Aneesa | T44 | `/my-tickets` lists all of the student's tickets, soonest first, with an empty state · students only | `tests/us26-my-tickets.test.js` |
+| **US27 Ticket shows event info** | Aneesa | T45 | Title, date, time, location and club on every ticket, from the right event | `tests/us27-ticket-event-info.test.js` |
+| **US28 Open a ticket** | Aneesa | T46 | Each ticket on My Tickets opens its own page with details and QR code · unknown codes show "Ticket not found." | `tests/us28-open-ticket.test.js` |
 
 ## Sprint 1 documents
 
