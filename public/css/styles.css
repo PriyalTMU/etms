@@ -118,11 +118,13 @@ h1, h2, h3, .event-meta span, .event-item h3, .alert, .field-error, .who span { 
 .status-pill.cancelled { background: var(--danger-bg); color: var(--danger); }
 .status-pill.checked_in { background: #eef3ff; color: var(--primary-dark); }
 .ticket-item.past { opacity: .7; }
-.ticket-code { display: inline-block; margin-top: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 700; letter-spacing: .06em; overflow-wrap: anywhere; }
+.ticket-code { display: inline-block; margin-top: 8px; margin-right: 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 700; letter-spacing: .06em; overflow-wrap: anywhere; }
 .e-ticket { border-top: 6px solid var(--primary); }
 .qr-wrap { text-align: center; border: 2px dashed var(--border); border-radius: 12px; padding: 16px; margin: 8px 0 16px; }
-.qr-wrap img { max-width: 100%; height: auto; image-rendering: pixelated; }
-.qr-wrap .ticket-code { font-size: 1.15rem; margin: 6px 0; }
+.qr-wrap img { display: block; margin: 0 auto; max-width: 100%; height: auto; image-rendering: pixelated; }
+.qr-wrap .ticket-code { display: block; font-size: 1.15rem; margin: 6px 0; }
 .qr-wrap .hint { color: var(--muted); font-size: .85rem; margin: 0; }
 .empty-state { text-align: center; }
 @media print { .topbar, .no-print, #new-msg, p:first-child { display: none !important; } .card { box-shadow: none; } }
+/* D9: a full event's disabled button should not show the "busy" cursor */
+.btn:disabled.is-full { cursor: not-allowed; opacity: .55; }
