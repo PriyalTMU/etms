@@ -6,6 +6,7 @@ const session = require('express-session');
 
 const { createUserModel } = require('./models/userModel');
 const { createEventModel } = require('./models/eventModel');
+const { createTicketModel } = require('./models/ticketModel');
 const { createAuthRoutes } = require('./routes/authRoutes');
 const { createEventRoutes } = require('./routes/eventRoutes');
 const { createPageRoutes } = require('./routes/pageRoutes');
@@ -23,10 +24,11 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
   if (!db) throw new Error('createApp needs a database');
   const users = createUserModel(db);
   const events = createEventModel(db);
+  const tickets = createTicketModel(db);
 
   const app = express();
   app.disable('x-powered-by');
-  app.locals.models = { users, events };
+  app.locals.models = { users, events, tickets };
 
   app.use(express.json({ limit: '50kb' }));
   app.use(
@@ -56,7 +58,7 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
     next();
   });
 
-  if (beforeRoutes) beforeRoutes(app, { users, events });
+  if (beforeRoutes) beforeRoutes(app, { users, events, tickets });
 
   app.use('/api', createAuthRoutes({ users }));
   app.use('/api', createStudentRoutes({ users }));
