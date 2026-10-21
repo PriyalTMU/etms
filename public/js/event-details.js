@@ -85,7 +85,7 @@
     if (state.role === 'organizer') { message('Organizer accounts cannot register for events. Log in with a student account to get a ticket.'); return; }
     if (state.isFull) {
       message('Sorry, this event is full. No more tickets can be issued.', 'error');
-      var full = el('button', 'btn big', 'Event full');
+      var full = el('button', 'btn big is-full', 'Event full');
       full.type = 'button';
       full.disabled = true;
       full.id = 'register-btn';
