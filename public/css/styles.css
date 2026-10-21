@@ -108,3 +108,7 @@ h1, h2, h3, .event-meta span, .event-item h3, .alert, .field-error, .who span { 
 .availability { display: inline-block; margin-top: 8px; margin-right: 12px; font-size: .85rem; font-weight: 600; color: var(--success); background: var(--success-bg); border-radius: 999px; padding: 2px 10px; }
 .availability.full, #ev-availability.full { color: var(--danger); background: var(--danger-bg); }
 #ev-availability.full { display: inline-block; border-radius: 999px; padding: 0 10px; }
+.register-box { border-top: 1px solid var(--border); margin-top: 20px; padding-top: 16px; }
+.register-box .alert { margin-bottom: 12px; }
+.alert.info { background: #eef3ff; color: var(--primary-dark); border: 1px solid #c9d7fb; }
+.btn.big { font-size: 1.05rem; padding: 12px 22px; }

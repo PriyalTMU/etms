@@ -44,6 +44,22 @@ function validSignup(overrides = {}) {
   };
 }
 
+let studentCounter = 0;
+/** Sign up a brand-new student through the real sign-up API and return a logged-in agent. */
+async function newStudent(app, name = 'Test Student') {
+  studentCounter += 1;
+  const email = `student${studentCounter}.${process.pid}@torontomu.ca`;
+  await request(app).post('/api/students/signup').send(validSignup({ name, email })).expect(201);
+  const agent = await loginStudent(app, { email, password: 'Campus2026' });
+  return { agent, email };
+}
+
+/** Organizer creates an event and returns it. */
+async function createEvent(app, overrides = {}) {
+  const agent = await loginOrganizer(app);
+  return (await agent.post('/api/events').send(validEvent(overrides)).expect(201)).body.event;
+}
+
 function daysFromNow(n) {
   const d = new Date();
   d.setDate(d.getDate() + n);
@@ -62,4 +78,4 @@ function validEvent(overrides = {}) {
   };
 }
 
-module.exports = { makeTestApp, loginOrganizer, loginStudent, validEvent, validSignup, daysFromNow, ORGANIZER, ORGANIZER_2, STUDENT, request };
+module.exports = { makeTestApp, loginOrganizer, loginStudent, newStudent, createEvent, validEvent, validSignup, daysFromNow, ORGANIZER, ORGANIZER_2, STUDENT, request };
