@@ -26,6 +26,13 @@
       ' · ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   };
 
+  // US19: "12 of 40 tickets left" / "Event full" text shared by the list and details pages.
+  ETMS.availabilityText = function (ev) {
+    if (ev.ticketsRemaining === undefined) return '';
+    if (ev.isFull) return 'Event full';
+    return ev.ticketsRemaining + ' of ' + ev.capacity + (ev.capacity === 1 ? ' ticket left' : ' tickets left');
+  };
+
   ETMS.el = function (tag, cls, text) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
