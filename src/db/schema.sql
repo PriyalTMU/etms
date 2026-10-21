@@ -1,4 +1,4 @@
--- ETMS database schema (Sprint 1)
+-- ETMS database schema (Sprint 1 + Sprint 2)
 -- T09: user / account data model   T10: event data model
 
 CREATE TABLE IF NOT EXISTS users (
@@ -25,3 +25,23 @@ CREATE TABLE IF NOT EXISTS events (
 
 CREATE INDEX IF NOT EXISTS idx_events_date ON events (event_date, event_time);
 CREATE INDEX IF NOT EXISTS idx_events_organizer ON events (organizer_id);
+
+-- Sprint 2 (T32): tickets / event registrations
+-- US18: a registration is saved against the student's account
+-- US23: every ticket has its own unique, hard-to-guess code
+-- status is ready for later sprints: 'checked_in' (Sprint 3), 'cancelled' (Sprint 4)
+CREATE TABLE IF NOT EXISTS tickets (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  ticket_code TEXT    NOT NULL UNIQUE,
+  event_id    INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  student_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status      TEXT    NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'checked_in', 'cancelled')),
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_tickets_event ON tickets (event_id, status);
+CREATE INDEX IF NOT EXISTS idx_tickets_student ON tickets (student_id);
+
+-- US22: a student can hold only one ticket per event (cancelled tickets don't count).
+CREATE UNIQUE INDEX IF NOT EXISTS uq_tickets_one_per_student
+  ON tickets (event_id, student_id) WHERE status <> 'cancelled';
