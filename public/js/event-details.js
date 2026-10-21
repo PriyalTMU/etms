@@ -13,6 +13,14 @@
     errorBox.hidden = false;
   }
 
+  // US19: tickets left, updated after a registration
+  function showAvailability(ev) {
+    var dd = document.getElementById('ev-availability');
+    dd.textContent = ETMS.availabilityText(ev);
+    dd.classList.toggle('full', !!ev.isFull);
+  }
+  ETMS.showAvailability = showAvailability;
+
   if (!/^\d+$/.test(id || '')) { fail('Event not found.'); return; }
 
   fetch('/api/events/' + id)
@@ -31,6 +39,7 @@
       document.getElementById('ev-location').textContent = ev.location;
       document.getElementById('ev-capacity').textContent = ev.capacity + (ev.capacity === 1 ? ' person' : ' people');
       document.getElementById('ev-description').textContent = ev.description;
+      showAvailability(ev);
       loading.hidden = true;
       card.hidden = false;
     })
