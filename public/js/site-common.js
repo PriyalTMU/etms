@@ -49,6 +49,12 @@
       var nm = ETMS.el('span', null, d.user.name);
       nm.id = 'who-name';
       who.appendChild(nm);
+      if (d.user.role === 'student') {
+        var mine = ETMS.el('a', null, 'My tickets');
+        mine.href = '/my-tickets';
+        mine.id = 'my-tickets-link';
+        who.appendChild(mine);
+      }
       if (d.user.role === 'organizer') {
         var a = ETMS.el('a', null, 'Organizer dashboard');
         a.href = '/organizer';
