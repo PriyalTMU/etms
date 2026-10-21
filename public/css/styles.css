@@ -103,3 +103,8 @@ input:focus, textarea:focus { outline: 2px solid #9db4f5; border-color: var(--pr
 h1, h2, h3, .event-meta span, .event-item h3, .alert, .field-error, .who span { overflow-wrap: anywhere; }
 .event-meta { min-width: 0; }
 .event-meta span { min-width: 0; max-width: 100%; }
+
+/* Sprint 2: availability, registration and tickets */
+.availability { display: inline-block; margin-top: 8px; margin-right: 12px; font-size: .85rem; font-weight: 600; color: var(--success); background: var(--success-bg); border-radius: 999px; padding: 2px 10px; }
+.availability.full, #ev-availability.full { color: var(--danger); background: var(--danger-bg); }
+#ev-availability.full { display: inline-block; border-radius: 999px; padding: 0 10px; }

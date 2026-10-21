@@ -1,4 +1,4 @@
-// US12: list upcoming events   US14: select an event to open its details
+// US12: list upcoming events   US14: select an event to open its details   US19: tickets left
 (function () {
   var list = document.getElementById('event-list');
   var empty = document.getElementById('no-events');
@@ -26,6 +26,8 @@
         meta.appendChild(el('span', 'meta-where', ev.location));
         if (ev.clubName) meta.appendChild(el('span', 'meta-club', ev.clubName));
         a.appendChild(meta);
+        // US19: tickets still available
+        a.appendChild(el('span', 'availability' + (ev.isFull ? ' full' : ''), ETMS.availabilityText(ev)));
         a.appendChild(el('span', 'view-link', 'View details →'));
 
         li.appendChild(a);

@@ -14,8 +14,19 @@ function toEvent(row) {
     capacity: row.capacity,
     createdAt: row.created_at,
     ...(row.club_name !== undefined ? { clubName: row.club_name } : {}),
+    // US19: live ticket availability (cancelled tickets don't count)
+    ...(row.tickets_issued !== undefined
+      ? {
+          ticketsIssued: row.tickets_issued,
+          ticketsRemaining: Math.max(0, row.capacity - row.tickets_issued),
+          isFull: row.tickets_issued >= row.capacity,
+        }
+      : {}),
   };
 }
+
+// T37 / US19: number of tickets issued so far, added to every event query.
+const ISSUED = `(SELECT COUNT(*) FROM tickets t WHERE t.event_id = e.id AND t.status <> 'cancelled') AS tickets_issued`;
 
 function createEventModel(db) {
   const insertStmt = db.prepare(
@@ -23,14 +34,14 @@ function createEventModel(db) {
      VALUES (?, ?, ?, ?, ?, ?, ?)`
   );
   const byIdStmt = db.prepare(
-    `SELECT e.*, u.club_name FROM events e JOIN users u ON u.id = e.organizer_id WHERE e.id = ?`
+    `SELECT e.*, u.club_name, ${ISSUED} FROM events e JOIN users u ON u.id = e.organizer_id WHERE e.id = ?`
   );
   const byOrganizerStmt = db.prepare(
-    `SELECT * FROM events WHERE organizer_id = ? ORDER BY event_date, event_time`
+    `SELECT e.*, ${ISSUED} FROM events e WHERE e.organizer_id = ? ORDER BY e.event_date, e.event_time`
   );
   // Upcoming = a later date, or today with a start time that has not passed yet.
   const upcomingStmt = db.prepare(
-    `SELECT e.*, u.club_name FROM events e JOIN users u ON u.id = e.organizer_id
+    `SELECT e.*, u.club_name, ${ISSUED} FROM events e JOIN users u ON u.id = e.organizer_id
      WHERE e.event_date > ? OR (e.event_date = ? AND e.event_time > ?)
      ORDER BY e.event_date, e.event_time, e.id`
   );
