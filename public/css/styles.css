@@ -178,3 +178,11 @@ label.btn { cursor: pointer; display: inline-block; }
 .data-table tr.is-checked td { background: #f1faf4; }
 .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: nowrap; }
 @media (max-width: 560px) { .stat-row { grid-template-columns: 1fr 1fr 1fr; gap: 6px; } .stat-num { font-size: 1.25rem; } }
+/* D12: on phones the attendance table drops the Registered column so names, codes and status fit */
+@media (max-width: 560px) {
+  .data-table th:nth-child(3), .data-table td:nth-child(3) { display: none; }
+  .data-table th, .data-table td { padding: 7px 6px; font-size: .85rem; }
+  .data-table .mono { white-space: normal; overflow-wrap: anywhere; }
+  .data-table .status-pill { white-space: nowrap; }
+}
+#code-hint { margin: -4px 0 4px; font-size: .85rem; }
