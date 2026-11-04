@@ -1,6 +1,7 @@
 // Sprint 3: event check-in data model.
 // T54 / T55 / US29: volunteer assignments   US30 / US31: who may check in for an event
 // T60 / T63-T65 / US32-US36: validate a scanned ticket and record the check-in
+// T66 / T67 / US37 / US38: issued tickets and attendance for an organizer
 
 const RESULT = Object.freeze({
   VALID: 'VALID',
@@ -37,6 +38,17 @@ function createCheckinModel(db) {
     `SELECT
        (SELECT COUNT(*) FROM tickets WHERE event_id = ? AND status <> 'cancelled') AS issued,
        (SELECT COUNT(*) FROM checkins WHERE event_id = ?) AS checked_in`
+  );
+
+  const attendanceStmt = db.prepare(
+    `SELECT t.ticket_code, t.status, t.created_at, s.name AS holder_name,
+            c.checked_in_at, v.name AS checked_in_by_name
+     FROM tickets t
+     JOIN users s ON s.id = t.student_id
+     LEFT JOIN checkins c ON c.ticket_id = t.id
+     LEFT JOIN users v ON v.id = c.checked_in_by
+     WHERE t.event_id = ?
+     ORDER BY s.name COLLATE NOCASE, t.id`
   );
 
   function inTransaction(fn) {
@@ -116,6 +128,17 @@ function createCheckinModel(db) {
       });
     },
 
+    /** US37 / US38: every ticket for an event with its check-in status. */
+    attendance(eventId) {
+      return attendanceStmt.all(eventId).map((r) => ({
+        code: r.ticket_code,
+        holderName: r.holder_name,
+        status: r.status,
+        registeredAt: r.created_at,
+        checkedInAt: r.checked_in_at || null,
+        checkedInBy: r.checked_in_by_name || null,
+      }));
+    },
   };
 }
 

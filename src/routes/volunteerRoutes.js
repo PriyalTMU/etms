@@ -1,6 +1,7 @@
 // T55 / US29: organizer gives a volunteer check-in access for one event
 // T56 / US30: volunteer opens check-in for their assigned event
 // T57 / US31: everyone else is blocked from check-in
+// T66 / T67 / US37 / US38: organizer's issued tickets and attendance
 const express = require('express');
 const { ROLES } = require('../models/userModel');
 const { requireRole, currentUser } = require('../middleware/auth');
@@ -58,6 +59,14 @@ function createVolunteerRoutes({ users, events, checkins }) {
     }
     const volunteer = checkins.listVolunteers(event.id).find((v) => v.id === row.id);
     return res.status(201).json({ volunteer, message: `${row.name} can now check in attendees for ${event.title}.` });
+  });
+
+  // T66 / T67 - US37: issued tickets, US38: who has checked in (organizer's own events only).
+  // Only what the organizer needs at the door: name, ticket code, status and times (no emails).
+  router.get('/organizer/events/:id/tickets', organizerOnly, (req, res) => {
+    const event = ownEvent(req);
+    if (!event) return res.status(404).json({ error: 'Event not found.' });
+    res.json({ event, summary: checkins.stats(event.id), tickets: checkins.attendance(event.id) });
   });
 
   // GET /api/checkin/events  -> events the logged-in user may run check-in for
