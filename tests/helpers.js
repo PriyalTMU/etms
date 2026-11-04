@@ -66,6 +66,19 @@ async function addVolunteer(app, eventId, email, creds = ORGANIZER) {
   return org.post(`/api/organizer/events/${eventId}/volunteers`).send({ email });
 }
 
+/**
+ * Sets up a check-in scenario: an event, a student with a ticket for it and an assigned volunteer.
+ * Returns { ev, ticket, holder, volunteer } where holder/volunteer have logged-in agents.
+ */
+async function checkinSetup(app, eventOverrides = {}) {
+  const ev = await createEvent(app, { title: 'Check-in Night', capacity: '20', ...eventOverrides });
+  const holder = await newStudent(app, 'Ticket Holder');
+  const ticket = (await holder.agent.post(`/api/events/${ev.id}/register`).send({}).expect(201)).body.ticket;
+  const volunteer = await newStudent(app, 'Val Volunteer');
+  await addVolunteer(app, ev.id, volunteer.email);
+  return { ev, ticket, holder, volunteer };
+}
+
 function daysFromNow(n) {
   const d = new Date();
   d.setDate(d.getDate() + n);
@@ -84,4 +97,4 @@ function validEvent(overrides = {}) {
   };
 }
 
-module.exports = { makeTestApp, loginOrganizer, loginStudent, newStudent, createEvent, addVolunteer, validEvent, validSignup, daysFromNow, ORGANIZER, ORGANIZER_2, STUDENT, request };
+module.exports = { makeTestApp, loginOrganizer, loginStudent, newStudent, createEvent, addVolunteer, checkinSetup, validEvent, validSignup, daysFromNow, ORGANIZER, ORGANIZER_2, STUDENT, request };

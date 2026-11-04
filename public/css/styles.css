@@ -139,3 +139,11 @@ h1, h2, h3, .event-meta span, .event-item h3, .alert, .field-error, .who span { 
 .muted { color: var(--muted); }
 .card-links { display: flex; gap: 18px; flex-wrap: wrap; }
 .checkin-event h1 { margin-bottom: 4px; }
+.ci-stats { font-weight: 700; margin: 8px 0 0; }
+.scanner { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 14px; }
+.scanner .hint { color: var(--muted); font-size: .9rem; }
+.video-wrap { margin-top: 10px; text-align: center; }
+.video-wrap video { width: 100%; max-width: 420px; border-radius: 12px; background: #000; display: block; margin: 0 auto 6px; }
+label.btn { cursor: pointer; display: inline-block; }
+.recent-title { margin-top: 20px; font-size: 1rem; }
+#ticket-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
