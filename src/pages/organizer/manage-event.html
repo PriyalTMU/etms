@@ -41,9 +41,36 @@
       <ul class="plain-list" id="volunteer-list"></ul>
       <p class="empty" id="no-volunteers" hidden>No volunteers yet. Add one above.</p>
     </section>
+
+    <!-- US37: issued tickets  US38: checked-in attendees -->
+    <section class="card" id="attendance-card" hidden>
+      <div class="page-head">
+        <h2>Tickets &amp; attendance</h2>
+        <button class="btn secondary" type="button" id="refresh-attendance">Refresh</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><span class="stat-num" id="stat-issued">0</span><span class="stat-label">Tickets issued</span></div>
+        <div class="stat ok"><span class="stat-num" id="stat-checked">0</span><span class="stat-label">Checked in</span></div>
+        <div class="stat"><span class="stat-num" id="stat-waiting">0</span><span class="stat-label">Not checked in yet</span></div>
+      </div>
+      <div class="filter-tabs" role="tablist" aria-label="Filter tickets">
+        <button type="button" class="tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+        <button type="button" class="tab" data-filter="checked" role="tab" aria-selected="false">Checked in</button>
+        <button type="button" class="tab" data-filter="waiting" role="tab" aria-selected="false">Not checked in</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="attendance-table">
+          <thead><tr><th>Name</th><th>Ticket code</th><th>Registered</th><th>Status</th><th>Checked in</th></tr></thead>
+          <tbody id="attendance-body"></tbody>
+        </table>
+      </div>
+      <p class="empty" id="no-tickets" hidden>No tickets have been issued for this event yet.</p>
+      <p class="hint muted" id="attendance-updated"></p>
+    </section>
   </main>
 
   <script src="/js/organizer-common.js"></script>
+  <script src="/js/attendance.js"></script>
   <script src="/js/manage-event.js"></script>
 </body>
 </html>
