@@ -19,7 +19,7 @@
     document.getElementById('ci-stats').textContent = s.checkedIn + ' of ' + s.issued + ' ticket holders checked in';
   }
 
-  // Basic result display; the full colour-coded panel is in checkin-result.js (US33, US34)
+  // Fallback only - the colour-coded result panel is in checkin-result.js (US33, US34)
   ETMS.showScanResult = ETMS.showScanResult || function (r) {
     var box = document.getElementById('scan-result');
     box.textContent = r.message;

@@ -147,3 +147,18 @@ h1, h2, h3, .event-meta span, .event-item h3, .alert, .field-error, .who span { 
 label.btn { cursor: pointer; display: inline-block; }
 .recent-title { margin-top: 20px; font-size: 1rem; }
 #ticket-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; }
+/* US33 / US34: check-in results readable at a glance at the door */
+.scan-result { display: flex; gap: 14px; align-items: center; border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; border: 2px solid transparent; }
+.scan-result.ok { background: #e6f6ec; border-color: #1e8e4e; color: #0f5a30; }
+.scan-result.bad { background: #fdeceb; border-color: #c0392b; color: #8e1f15; }
+.scan-result.warn { background: #fff4e0; border-color: #d68910; color: #7a4a00; }
+.scan-result.neutral { background: #f0f2f6; border-color: #9aa3b2; color: var(--text); }
+.scan-icon { flex: 0 0 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; color: #fff; }
+.ok .scan-icon { background: #1e8e4e; } .bad .scan-icon { background: #c0392b; } .warn .scan-icon { background: #d68910; } .neutral .scan-icon { background: #9aa3b2; }
+.scan-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.scan-title { font-size: 1.25rem; letter-spacing: .02em; }
+.scan-detail { font-weight: 600; overflow-wrap: anywhere; }
+.scan-message { font-size: .9rem; opacity: .9; }
+.recent-item { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; border-left: 4px solid var(--border); padding: 6px 10px; background: #fff; border-radius: 6px; }
+.recent-item.ok { border-left-color: #1e8e4e; } .recent-item.bad { border-left-color: #c0392b; } .recent-item.warn { border-left-color: #d68910; }
+.recent-time { color: var(--muted); font-size: .85rem; min-width: 64px; }
