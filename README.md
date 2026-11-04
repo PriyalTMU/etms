@@ -68,12 +68,12 @@ etms/
 │   ├── app.js               Builds the Express app (used by server.js and the tests)
 │   ├── config.js            PORT, SESSION_SECRET, DB_PATH (from .env or defaults)
 │   ├── db/                  schema.sql, database.js (connection), seed.js (demo data)
-│   ├── models/              userModel.js, eventModel.js, ticketModel.js (Sprint 2)
+│   ├── models/              userModel.js, eventModel.js, ticketModel.js (Sprint 2), checkinModel.js (Sprint 3)
 │   ├── middleware/auth.js   requireRole / requireRolePage (role-based access)
 │   ├── routes/              auth, student, event, public event, registration + ticket (Sprint 2), page routes
 │   ├── shared/              eventValidation.js, accountValidation.js – used by BOTH server and browser
-│   ├── lib/                 ticketCode.js (unique ticket codes), ticketQr.js (QR codes) – server only
-│   └── pages/               organizer/, student/ (login, sign-up, my-tickets, ticket), events/ – served through routes
+│   ├── lib/                 ticketCode.js, ticketQr.js, ticketInput.js (cleans typed/scanned codes) – server only
+│   └── pages/               organizer/ (incl. manage-event), student/, events/, checkin/ – served through routes
 ├── tests/                   One test file per user story
 └── data/                    Local SQLite database (git-ignored)
 ```
@@ -95,6 +95,13 @@ etms/
 | `GET /api/events/:id/registration` | anyone | What the details page should show: `{ role, ticketCode, isFull, ticketsRemaining, started }` |
 | `GET /api/my/tickets` | student | The logged-in student's tickets with event info, soonest first |
 | `GET /api/tickets/:code` | student (owner) | One ticket with event info and its QR code (`qrSvg`); anyone else gets `404 Ticket not found.` |
+| `GET /api/organizer/events/:id/volunteers` | organizer (own event) | The event and its check-in volunteers (Sprint 3) |
+| `POST /api/organizer/events/:id/volunteers` | organizer (own event) | `{ email }` of a **student** account → gives check-in access for this event. `201` · `400` bad/organizer email · `404` no such student · `409` already added |
+| `GET /api/organizer/events/:id/tickets` | organizer (own event) | `{ summary: { issued, checkedIn, notCheckedIn }, tickets: [{ holderName, code, status, registeredAt, checkedInAt, checkedInBy }] }` |
+| `GET /api/checkin/events` | logged in | Events this user can run check-in for (assigned volunteer, or own events for organizers) |
+| `GET /api/checkin/events/:id` | volunteer / owner | The event being managed, `403` otherwise |
+| `GET /api/checkin/events/:id/stats` | volunteer / owner | `{ issued, checkedIn, notCheckedIn }` |
+| `POST /api/checkin/events/:id/scan` | volunteer / owner | `{ code }` typed or from the QR code → `{ result: VALID \| INVALID \| WRONG_EVENT \| ALREADY_USED \| CANCELLED \| UNREADABLE, message, ticket, checkedInAt, stats }`. A VALID scan saves the check-in |
 
 Pages: `/signup` (create student account), `/login` (student login), `/organizer/login`, `/organizer` (dashboard), `/organizer/events/new` (create event),
 `/events` (upcoming event list), `/events/:id` (event details).
@@ -112,6 +119,31 @@ Pages: `/signup` (create student account), `/login` (student login), `/organizer
 - One branch per story: `feature/US08-create-event`, `fix/...` for bugs.
 - `git pull` before starting work, commit small and often, run `npm test` before opening a PR.
 - Open a Pull Request into `main`, a teammate reviews, then merge.
+
+## Sprint 3 documents
+
+- [`docs/SPRINT3-TEST-REPORT.md`](docs/SPRINT3-TEST-REPORT.md) – Sprint 3 story, end-to-end, camera/photo and phone-width results, defects D10–D12
+- [`docs/DEMO-SCRIPT-SPRINT3.md`](docs/DEMO-SCRIPT-SPRINT3.md) – Sprint 3 demo for the Nov 4 lab
+- `docs/screenshots/sprint3/` – backup screenshots of the check-in flow
+
+## Sprint 3 progress
+
+Sprint Goal: authorized volunteers can access check-in for an assigned event, verify attendee tickets, reject invalid or already-used tickets, mark valid tickets as checked in, and organizers can monitor issued tickets and attendance.
+
+| Story | Owner | Tasks | Acceptance criteria → how it is met | Tests |
+|---|---|---|---|---|
+| **US29 Give volunteer check-in access** | Priyal | T54, T55 | *Check-in volunteers* form on `/organizer/events/<id>` · access is stored per event (`checkin_assignments`) · clear errors for unknown email, organizer accounts, duplicates and other clubs' events | `tests/us29-volunteer-access.test.js` |
+| **US30 Volunteer accesses assigned check-in** | Priyal | T56 | `/checkin` lists the volunteer's events · `/checkin/events/<id>` shows which event is managed · other events refused | `tests/us30-volunteer-checkin-page.test.js` |
+| **US31 Block unauthorized check-in** | Priyal | T57 | Logged out → login · students without access and other organizers → "No check-in access" page / 403 | `tests/us31-block-unauthorized-checkin.test.js` |
+| **US32 Enter or scan ticket identifier** | Ravi | T58, T59, T60 | Type the code (forgiving format) · live camera QR scanning (jsQR, local) · photo of the QR code when live camera isn't allowed · checked against the managed event · junk input handled | `tests/us32-enter-scan-ticket.test.js` |
+| **US33 Valid-ticket result** | Aneesa | T61 | Green "VALID – LET THEM IN" with the holder's name and code | `tests/us33-us34-checkin-results.test.js` |
+| **US34 Reject invalid ticket** | Aneesa | T62 | Red INVALID / WRONG EVENT (names the other event) / CANCELLED · no check-in record created | `tests/us33-us34-checkin-results.test.js` |
+| **US35 Reject already-used ticket** | Ravi | T63 | Amber "ALREADY USED" with time and volunteer · one check-in per ticket (UNIQUE) even with two scanners at once | `tests/us35-already-used.test.js` |
+| **US36 Mark valid ticket checked in** | Ravi | T64, T65 | Check-in row + ticket status `checked_in` in one transaction · kept after restart · attendance updates | `tests/us36-mark-checked-in.test.js` |
+| **US37 Organizer views issued tickets** | Aneesa | T66 | *Tickets & attendance* on `/organizer/events/<id>` · only that event · status shown · own events only, no emails | `tests/us37-us38-attendance.test.js` |
+| **US38 Organizer views checked-in attendees** | Aneesa | T67 | Issued / checked in / not yet tiles · All / Checked in / Not checked in filters · refreshes every 15 s | `tests/us37-us38-attendance.test.js` |
+
+**Phones:** live camera scanning works on `localhost` or https. A phone that opens the laptop's address over Wi-Fi (plain http) gets *Take a photo of the QR code* instead, plus the code box.
 
 ## Sprint 2 documents
 
