@@ -20,9 +20,40 @@
       <p class="club" id="ci-club"></p>
       <h1 id="ci-title"></h1>
       <p class="subtitle" id="ci-meta"></p>
+      <p class="ci-stats" id="ci-stats" aria-live="polite"></p>
+    </section>
+
+    <!-- US32: enter or scan a ticket -->
+    <section class="card" id="scan-card" hidden>
+      <div id="scan-result" class="scan-result" role="status" aria-live="assertive" hidden></div>
+
+      <form id="code-form" class="inline-form" novalidate autocomplete="off">
+        <label for="ticket-code" class="sr-only">Ticket code</label>
+        <input id="ticket-code" name="code" type="text" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="Type ticket code, e.g. ETMS-7KQ2-M9XD-4HPA">
+        <button class="btn" type="submit" id="check-btn">Check in</button>
+      </form>
+
+      <div class="scanner">
+        <div class="actions">
+          <button class="btn secondary" type="button" id="camera-btn">Scan QR code with camera</button>
+          <label class="btn secondary" for="photo-input" id="photo-btn">Take a photo of the QR code</label>
+          <input id="photo-input" type="file" accept="image/*" capture="environment" hidden>
+        </div>
+        <p class="hint" id="camera-hint"></p>
+        <div class="video-wrap" id="video-wrap" hidden>
+          <video id="camera" playsinline muted></video>
+          <button class="btn link" type="button" id="camera-stop">Stop camera</button>
+        </div>
+        <canvas id="qr-canvas" hidden></canvas>
+      </div>
+
+      <h2 class="recent-title">Recent scans</h2>
+      <ul class="plain-list recent" id="recent-scans"></ul>
     </section>
   </main>
   <script src="/js/site-common.js"></script>
+  <script src="/vendor/jsQR.js"></script>
   <script src="/js/checkin.js"></script>
+  <script src="/js/checkin-scan.js"></script>
 </body>
 </html>

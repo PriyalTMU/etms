@@ -16,6 +16,7 @@ const { createStudentRoutes } = require('./routes/studentRoutes');
 const { createRegistrationRoutes } = require('./routes/registrationRoutes');
 const { createTicketRoutes } = require('./routes/ticketRoutes');
 const { createVolunteerRoutes } = require('./routes/volunteerRoutes');
+const { createCheckinRoutes } = require('./routes/checkinRoutes');
 
 /**
  * @param {object} options
@@ -71,12 +72,15 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
   app.use('/api', createRegistrationRoutes({ events, tickets, now }));
   app.use('/api', createTicketRoutes({ tickets, now }));
   app.use('/api', createVolunteerRoutes({ users, events, checkins }));
+  app.use('/api', createCheckinRoutes({ events, checkins, now }));
   app.use('/api', createPublicEventRoutes({ events, now }));
   app.use(createPageRoutes({ events, checkins }));
 
   // Static files: public pages, CSS, JS, and the shared validator for the browser.
   app.use('/shared', express.static(path.join(__dirname, 'shared')));
   app.use(express.static(path.join(__dirname, '..', 'public')));
+  // T59: QR decoder used by the check-in page's camera scanner (served locally, works offline)
+  app.get('/vendor/jsQR.js', (req, res) => res.sendFile(require.resolve('jsqr/dist/jsQR.js')));
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
   app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'pages', 'not-found.html')));
