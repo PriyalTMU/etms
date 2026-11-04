@@ -29,9 +29,10 @@
 
       <form id="code-form" class="inline-form" novalidate autocomplete="off">
         <label for="ticket-code" class="sr-only">Ticket code</label>
-        <input id="ticket-code" name="code" type="text" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="Type ticket code, e.g. ETMS-7KQ2-M9XD-4HPA">
+        <input id="ticket-code" name="code" type="text" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="Type ticket code" aria-describedby="code-hint">
         <button class="btn" type="submit" id="check-btn">Check in</button>
       </form>
+      <p class="hint muted" id="code-hint">Codes look like ETMS-7KQ2-M9XD-4HPA. Capitals and dashes are optional.</p>
 
       <div class="scanner">
         <div class="actions">

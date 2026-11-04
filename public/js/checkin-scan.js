@@ -11,8 +11,10 @@
   var hint = document.getElementById('camera-hint');
   var stream = null;
   var busy = false;
-  var lastCode = '';
-  var lastAt = 0;
+  // D10: codes this camera has already sent, so a QR code still in view after the
+  // volunteer let the person in is not re-scanned and shown as "ALREADY USED"
+  var cameraSeen = {};
+  var CAMERA_REPEAT_MS = 60000;
 
   function showStats(s) {
     if (!s) return;
@@ -85,10 +87,8 @@
     if (video.readyState === video.HAVE_ENOUGH_DATA) {
       var text = decode(video, video.videoWidth, video.videoHeight);
       var nowMs = Date.now();
-      // Ignore the same code for 3 s so one QR code held up to the camera is only checked once per scan
-      if (text && !busy && (text !== lastCode || nowMs - lastAt > 3000)) {
-        lastCode = text;
-        lastAt = nowMs;
+      if (text && !busy && !(cameraSeen[text] && nowMs - cameraSeen[text] < CAMERA_REPEAT_MS)) {
+        cameraSeen[text] = nowMs;
         submit(text, 'camera');
       }
     }
