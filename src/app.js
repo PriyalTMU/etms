@@ -7,6 +7,7 @@ const session = require('express-session');
 const { createUserModel } = require('./models/userModel');
 const { createEventModel } = require('./models/eventModel');
 const { createTicketModel } = require('./models/ticketModel');
+const { createCheckinModel } = require('./models/checkinModel');
 const { createAuthRoutes } = require('./routes/authRoutes');
 const { createEventRoutes } = require('./routes/eventRoutes');
 const { createPageRoutes } = require('./routes/pageRoutes');
@@ -14,6 +15,7 @@ const { createPublicEventRoutes } = require('./routes/publicEventRoutes');
 const { createStudentRoutes } = require('./routes/studentRoutes');
 const { createRegistrationRoutes } = require('./routes/registrationRoutes');
 const { createTicketRoutes } = require('./routes/ticketRoutes');
+const { createVolunteerRoutes } = require('./routes/volunteerRoutes');
 
 /**
  * @param {object} options
@@ -27,10 +29,11 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
   const users = createUserModel(db);
   const events = createEventModel(db);
   const tickets = createTicketModel(db);
+  const checkins = createCheckinModel(db);
 
   const app = express();
   app.disable('x-powered-by');
-  app.locals.models = { users, events, tickets };
+  app.locals.models = { users, events, tickets, checkins };
 
   app.use(express.json({ limit: '50kb' }));
   app.use(
@@ -60,15 +63,16 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
     next();
   });
 
-  if (beforeRoutes) beforeRoutes(app, { users, events, tickets });
+  if (beforeRoutes) beforeRoutes(app, { users, events, tickets, checkins });
 
   app.use('/api', createAuthRoutes({ users }));
   app.use('/api', createStudentRoutes({ users }));
   app.use('/api', createEventRoutes({ events }));
   app.use('/api', createRegistrationRoutes({ events, tickets, now }));
   app.use('/api', createTicketRoutes({ tickets, now }));
+  app.use('/api', createVolunteerRoutes({ users, events, checkins }));
   app.use('/api', createPublicEventRoutes({ events, now }));
-  app.use(createPageRoutes());
+  app.use(createPageRoutes({ events, checkins }));
 
   // Static files: public pages, CSS, JS, and the shared validator for the browser.
   app.use('/shared', express.static(path.join(__dirname, 'shared')));

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My check-in events · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/">ETMS <span>Campus Events</span></a>
+    <div class="who" id="site-who"></div>
+  </div></header>
+  <main class="container">
+    <h1>Check-in</h1>
+    <p class="subtitle">Events you can check attendees in for. Pick one to start scanning tickets.</p>
+    <div id="checkin-error" class="alert error" role="alert" hidden></div>
+    <p class="empty" id="loading">Loading…</p>
+    <ul class="event-list" id="checkin-events"></ul>
+    <div class="card empty-state" id="no-checkin-events" hidden>
+      <p>You don't have check-in access for any events. An event organizer has to add you as a volunteer first.</p>
+    </div>
+  </main>
+  <script src="/js/site-common.js"></script>
+  <script src="/js/checkin-events.js"></script>
+</body>
+</html>

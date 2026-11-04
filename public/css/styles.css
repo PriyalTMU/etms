@@ -128,3 +128,14 @@ h1, h2, h3, .event-meta span, .event-item h3, .alert, .field-error, .who span { 
 @media print { .topbar, .no-print, #new-msg, p:first-child { display: none !important; } .card { box-shadow: none; } }
 /* D9: a full event's disabled button should not show the "busy" cursor */
 .btn:disabled.is-full { cursor: not-allowed; opacity: .55; }
+
+/* Sprint 3: volunteers, check-in and attendance */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.inline-form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.inline-form input { flex: 1 1 240px; min-width: 0; }
+.plain-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.volunteer-item { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.volunteer-item .status-pill { margin-left: auto; }
+.muted { color: var(--muted); }
+.card-links { display: flex; gap: 18px; flex-wrap: wrap; }
+.checkin-event h1 { margin-bottom: 4px; }

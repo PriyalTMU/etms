@@ -1,4 +1,4 @@
--- ETMS database schema (Sprint 1 + Sprint 2)
+-- ETMS database schema (Sprints 1-3)
 -- T09: user / account data model   T10: event data model
 
 CREATE TABLE IF NOT EXISTS users (
@@ -45,3 +45,25 @@ CREATE INDEX IF NOT EXISTS idx_tickets_student ON tickets (student_id);
 -- US22: a student can hold only one ticket per event (cancelled tickets don't count).
 CREATE UNIQUE INDEX IF NOT EXISTS uq_tickets_one_per_student
   ON tickets (event_id, student_id) WHERE status <> 'cancelled';
+
+-- Sprint 3 (T54): event check-in
+-- US29: an organizer gives a volunteer (a student account) check-in access to ONE event
+CREATE TABLE IF NOT EXISTS checkin_assignments (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  event_id     INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  volunteer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  assigned_by  INTEGER NOT NULL REFERENCES users(id),
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (event_id, volunteer_id)
+);
+CREATE INDEX IF NOT EXISTS idx_assignments_volunteer ON checkin_assignments (volunteer_id);
+
+-- US36: one check-in record per ticket (UNIQUE ticket_id means a ticket can never be checked in twice)
+CREATE TABLE IF NOT EXISTS checkins (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  ticket_id     INTEGER NOT NULL UNIQUE REFERENCES tickets(id) ON DELETE CASCADE,
+  event_id      INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  checked_in_by INTEGER NOT NULL REFERENCES users(id),
+  checked_in_at TEXT    NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_checkins_event ON checkins (event_id);
