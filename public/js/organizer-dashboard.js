@@ -31,9 +31,14 @@
         meta.appendChild(el('span', null, ev.location));
         meta.appendChild(el('span', null, 'Capacity: ' + ev.capacity));
         li.appendChild(meta);
+        var links = el('div', 'card-links');
+        var manage = el('a', 'view-link', 'Tickets, attendance & volunteers →');
+        manage.href = '/organizer/events/' + encodeURIComponent(ev.id);
+        links.appendChild(manage);
         var view = el('a', 'view-link', 'View as students see it →');
         view.href = '/events/' + encodeURIComponent(ev.id);
-        li.appendChild(view);
+        links.appendChild(view);
+        li.appendChild(links);
         list.appendChild(li);
         if (ev.id === createdId) {
           banner.textContent = 'Event "' + ev.title + '" was created.';

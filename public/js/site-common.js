@@ -55,6 +55,16 @@
         mine.id = 'my-tickets-link';
         who.appendChild(mine);
       }
+      // Sprint 3 (US30): volunteers get a Check-in link once an organizer has added them
+      if (d.user.role === 'student') {
+        fetch('/api/checkin/events').then(function (r) { return r.ok ? r.json() : { events: [] }; }).then(function (c) {
+          if (!c.events.length) return;
+          var ci = ETMS.el('a', null, 'Check-in');
+          ci.href = '/checkin';
+          ci.id = 'checkin-link';
+          who.insertBefore(ci, who.querySelector('button'));
+        }).catch(function () {});
+      }
       if (d.user.role === 'organizer') {
         var a = ETMS.el('a', null, 'Organizer dashboard');
         a.href = '/organizer';

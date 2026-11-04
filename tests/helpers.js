@@ -60,6 +60,12 @@ async function createEvent(app, overrides = {}) {
   return (await agent.post('/api/events').send(validEvent(overrides)).expect(201)).body.event;
 }
 
+/** Organizer (organizer@etms.test by default) gives a student check-in access to an event. */
+async function addVolunteer(app, eventId, email, creds = ORGANIZER) {
+  const org = await loginOrganizer(app, creds);
+  return org.post(`/api/organizer/events/${eventId}/volunteers`).send({ email });
+}
+
 function daysFromNow(n) {
   const d = new Date();
   d.setDate(d.getDate() + n);
@@ -78,4 +84,4 @@ function validEvent(overrides = {}) {
   };
 }
 
-module.exports = { makeTestApp, loginOrganizer, loginStudent, newStudent, createEvent, validEvent, validSignup, daysFromNow, ORGANIZER, ORGANIZER_2, STUDENT, request };
+module.exports = { makeTestApp, loginOrganizer, loginStudent, newStudent, createEvent, addVolunteer, validEvent, validSignup, daysFromNow, ORGANIZER, ORGANIZER_2, STUDENT, request };

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Check-in · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/">ETMS <span>Check-in</span></a>
+    <div class="who" id="site-who"></div>
+  </div></header>
+  <main class="container" style="max-width: 720px">
+    <p><a href="/checkin">&larr; My check-in events</a></p>
+    <div id="scan-error" class="alert error" role="alert" hidden></div>
+
+    <!-- US30: the page shows clearly which event is being managed -->
+    <section class="card checkin-event" id="checkin-event" hidden>
+      <p class="club" id="ci-club"></p>
+      <h1 id="ci-title"></h1>
+      <p class="subtitle" id="ci-meta"></p>
+    </section>
+  </main>
+  <script src="/js/site-common.js"></script>
+  <script src="/js/checkin.js"></script>
+</body>
+</html>

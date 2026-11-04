@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage event · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/organizer">ETMS <span>Organizer</span></a>
+    <div class="who"><span class="role-badge">Organizer</span><span id="who-name"></span>
+      <button class="btn link" id="logout-btn" type="button">Log out</button></div>
+  </div></header>
+
+  <main class="container">
+    <p><a href="/organizer">&larr; Back to your events</a></p>
+    <div id="page-error" class="alert error" role="alert" hidden></div>
+
+    <div class="page-head" id="event-head" hidden>
+      <div>
+        <h1 id="ev-title"></h1>
+        <p class="subtitle" id="ev-meta"></p>
+      </div>
+      <div class="actions">
+        <a class="btn" id="open-checkin" href="/checkin">Open check-in</a>
+        <a class="btn secondary" id="student-view" href="/events">Student view</a>
+      </div>
+    </div>
+
+    <!-- US29: check-in volunteers -->
+    <section class="card" id="volunteers-card" hidden>
+      <h2>Check-in volunteers</h2>
+      <p class="subtitle">Give a student volunteer check-in access for <strong>this event only</strong>. They must already have a student account.</p>
+      <form id="volunteer-form" class="inline-form" novalidate>
+        <label for="volunteer-email" class="sr-only">Volunteer's student email</label>
+        <input id="volunteer-email" name="email" type="email" placeholder="volunteer@torontomu.ca" autocomplete="off" required>
+        <button class="btn" type="submit" id="add-volunteer-btn">Give check-in access</button>
+      </form>
+      <div id="volunteer-msg" class="alert" role="status" hidden></div>
+      <ul class="plain-list" id="volunteer-list"></ul>
+      <p class="empty" id="no-volunteers" hidden>No volunteers yet. Add one above.</p>
+    </section>
+  </main>
+
+  <script src="/js/organizer-common.js"></script>
+  <script src="/js/manage-event.js"></script>
+</body>
+</html>
