@@ -10,6 +10,7 @@
     ALREADY_USED: { cls: 'warn', icon: '!', title: 'ALREADY USED – DO NOT LET IN' },
     WRONG_EVENT: { cls: 'bad', icon: '✕', title: 'WRONG EVENT – DO NOT LET IN' },
     CANCELLED: { cls: 'bad', icon: '✕', title: 'CANCELLED TICKET – DO NOT LET IN' },
+    EVENT_CANCELLED: { cls: 'bad', icon: '✕', title: 'EVENT CANCELLED – DO NOT LET IN' },
     INVALID: { cls: 'bad', icon: '✕', title: 'INVALID TICKET – DO NOT LET IN' },
     UNREADABLE: { cls: 'neutral', icon: '?', title: 'COULD NOT READ CODE' },
     ERROR: { cls: 'neutral', icon: '?', title: 'CHECK-IN PROBLEM' },

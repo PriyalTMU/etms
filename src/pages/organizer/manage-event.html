@@ -16,6 +16,8 @@
   <main class="container">
     <p><a href="/organizer">&larr; Back to your events</a></p>
     <div id="page-error" class="alert error" role="alert" hidden></div>
+    <div id="updated-msg" class="alert success" role="status" hidden>Your changes were saved. Students now see the updated event.</div>
+    <div id="cancelled-banner" class="alert cancelled-banner" role="status" hidden></div>
 
     <div class="page-head" id="event-head" hidden>
       <div>
@@ -24,6 +26,7 @@
       </div>
       <div class="actions">
         <a class="btn" id="open-checkin" href="/checkin">Open check-in</a>
+        <a class="btn secondary" id="edit-event" href="/organizer">Edit event</a>
         <a class="btn secondary" id="student-view" href="/events">Student view</a>
       </div>
     </div>
@@ -40,6 +43,22 @@
       <div id="volunteer-msg" class="alert" role="status" hidden></div>
       <ul class="plain-list" id="volunteer-list"></ul>
       <p class="empty" id="no-volunteers" hidden>No volunteers yet. Add one above.</p>
+    </section>
+
+    <!-- Sprint 4 - US41: cancel the event (kept and marked cancelled, never deleted) -->
+    <section class="card danger-zone" id="cancel-card" hidden>
+      <h2>Cancel this event</h2>
+      <p class="subtitle">Students will see that the event is cancelled and nobody can register any more. The event and its tickets are kept. This cannot be undone.</p>
+      <button class="btn danger" type="button" id="cancel-start">Cancel event…</button>
+      <form id="cancel-form" hidden novalidate>
+        <label for="cancel-reason">Reason shown to students <span class="muted">(optional)</span></label>
+        <textarea id="cancel-reason" name="reason" maxlength="300" rows="2" placeholder="e.g. The room is no longer available."></textarea>
+        <div class="actions">
+          <button class="btn danger" type="submit" id="cancel-confirm">Yes, cancel this event</button>
+          <button class="btn secondary" type="button" id="cancel-back">Keep the event</button>
+        </div>
+      </form>
+      <div id="cancel-msg" class="alert" role="status" hidden></div>
     </section>
 
     <!-- US37: issued tickets  US38: checked-in attendees -->
@@ -72,5 +91,6 @@
   <script src="/js/organizer-common.js"></script>
   <script src="/js/attendance.js"></script>
   <script src="/js/manage-event.js"></script>
+  <script src="/js/cancel-event.js"></script>
 </body>
 </html>

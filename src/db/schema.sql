@@ -67,3 +67,27 @@ CREATE TABLE IF NOT EXISTS checkins (
   checked_in_at TEXT    NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_checkins_event ON checkins (event_id);
+
+-- Sprint 4 (T77-T95). New columns are added to databases from earlier sprints by
+-- upgradeSchema() in database.js, so nobody has to reset their data.
+--   events.category      US46 filter by category
+--   events.payment_type  US51/US52 free or demo-paid   events.price_cents  demo price (no real money)
+--   events.status        US41 'scheduled' or 'cancelled' (cancelled events are kept, never deleted)
+--   tickets.cancelled_at US42 when a student cancelled their ticket
+
+-- US53/US54: simulated (demo) checkouts. No card details are ever collected or stored (NFR1).
+-- A ticket is created only when a checkout is completed, and a checkout can complete only once.
+CREATE TABLE IF NOT EXISTS checkouts (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  token        TEXT    NOT NULL UNIQUE,
+  event_id     INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  student_id   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  amount_cents INTEGER NOT NULL CHECK (amount_cents >= 0),
+  status       TEXT    NOT NULL DEFAULT 'pending'
+               CHECK (status IN ('pending', 'completed', 'cancelled', 'declined', 'failed')),
+  failure      TEXT,
+  ticket_id    INTEGER REFERENCES tickets(id),
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now')),
+  finished_at  TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_checkouts_student ON checkouts (student_id, event_id, status);

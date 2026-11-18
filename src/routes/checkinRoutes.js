@@ -14,6 +14,7 @@ const MESSAGES = {
   WRONG_EVENT: 'Invalid ticket – this ticket is for a different event.',
   ALREADY_USED: 'Already used – this ticket was already checked in.',
   CANCELLED: 'Invalid ticket – this ticket was cancelled.',
+  EVENT_CANCELLED: 'Do not let in – this event has been cancelled by the organizer.',
 };
 
 function createCheckinRoutes({ events, checkins, now = () => new Date() }) {

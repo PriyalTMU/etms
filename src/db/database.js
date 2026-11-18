@@ -42,7 +42,29 @@ function openDatabase(dbPath) {
   const db = new DatabaseSync(dbPath);
   db.exec('PRAGMA foreign_keys = ON;');
   db.exec(fs.readFileSync(SCHEMA_PATH, 'utf8'));
+  upgradeSchema(db);
   return db;
 }
 
-module.exports = { openDatabase, nodeVersionOk, MIN_NODE };
+// Sprint 4: columns added after earlier sprints. ALTER TABLE only runs when a column is
+// missing, so a database made in Sprint 1-3 is upgraded in place and keeps its data.
+const SPRINT4_COLUMNS = [
+  ['events', 'category', "TEXT NOT NULL DEFAULT 'other'"],
+  ['events', 'payment_type', "TEXT NOT NULL DEFAULT 'free' CHECK (payment_type IN ('free', 'demo_paid'))"],
+  ['events', 'price_cents', 'INTEGER NOT NULL DEFAULT 0 CHECK (price_cents >= 0)'],
+  ['events', 'status', "TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'cancelled'))"],
+  ['events', 'cancelled_at', 'TEXT'],
+  ['events', 'cancel_reason', 'TEXT'],
+  ['events', 'updated_at', 'TEXT'],
+  ['tickets', 'cancelled_at', 'TEXT'],
+];
+
+function upgradeSchema(db) {
+  for (const [table, column, definition] of SPRINT4_COLUMNS) {
+    const has = db.prepare(`PRAGMA table_info(${table})`).all().some((c) => c.name === column);
+    if (!has) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+  db.exec('CREATE INDEX IF NOT EXISTS idx_events_status ON events (status)');
+}
+
+module.exports = { openDatabase, upgradeSchema, nodeVersionOk, MIN_NODE };

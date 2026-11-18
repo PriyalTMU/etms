@@ -17,7 +17,17 @@ function daysFromNow(n) {
   return localDateString(d);
 }
 
-function seedIfEmpty(db) {
+// Sprint 4 demo data: a mix of categories, dates and one demo-paid event so search, filters
+// and the simulated checkout can be shown straight away. Only added for the running app / npm run demo
+// (tests use the three Sprint 1 events above so their counts stay the same).
+const SPRINT4_DEMO_EVENTS = [
+  { club: 1, title: 'Resume & LinkedIn Clinic', description: 'Bring your resume for quick one-on-one feedback from upper-year students and career staff.', days: 4, time: '12:00', location: 'Career Centre, POD 60', capacity: 30, category: 'career' },
+  { club: 1, title: 'Fall Photography Walk', description: 'A relaxed walk around campus with tips on composition and phone photography. All levels welcome.', days: 5, time: '16:00', location: 'Meet at the Quad', capacity: 25, category: 'arts' },
+  { club: 2, title: 'Intramural Basketball Night', description: 'Pick-up games and a mini tournament. Teams are made on the night.', days: 8, time: '19:00', location: 'Mattamy Athletic Centre', capacity: 80, category: 'sports' },
+  { club: 1, title: 'Winter Formal Gala', description: 'Dinner, music and dancing to end the term. Demo-paid event: the ticket price uses the simulated checkout.', days: 12, time: '19:30', location: 'Student Campus Centre, Ballroom', capacity: 150, category: 'social', paymentType: 'demo_paid', priceCents: 1500 },
+];
+
+function seedIfEmpty(db, { demoExtras = false } = {}) {
   const { count } = db.prepare('SELECT COUNT(*) AS count FROM users').get();
   if (count > 0) return false;
 
@@ -29,18 +39,23 @@ function seedIfEmpty(db) {
   events.create(cs.id, {
     title: 'Intro to Git Workshop',
     description: 'Hands-on workshop covering branches, commits and pull requests. Bring a laptop.',
-    date: daysFromNow(3), time: '17:00', location: 'ENG 103', capacity: 40,
+    date: daysFromNow(3), time: '17:00', location: 'ENG 103', capacity: 40, category: 'academic',
   });
   events.create(cs.id, {
     title: 'Hackathon Kickoff Night',
     description: 'Meet teams, hear the challenge and grab some pizza before the weekend hackathon.',
-    date: daysFromNow(10), time: '18:30', location: 'Student Learning Centre, Room 601', capacity: 120,
+    date: daysFromNow(10), time: '18:30', location: 'Student Learning Centre, Room 601', capacity: 120, category: 'tech',
   });
   events.create(robotics.id, {
     title: 'Robotics Club Open House',
     description: 'See our competition robots, try the simulator and learn how to join a build team.',
-    date: daysFromNow(6), time: '15:00', location: 'Kerr Hall East, Lab 2', capacity: 60,
+    date: daysFromNow(6), time: '15:00', location: 'Kerr Hall East, Lab 2', capacity: 60, category: 'tech',
   });
+  if (demoExtras) {
+    for (const e of SPRINT4_DEMO_EVENTS) {
+      events.create(e.club === 2 ? robotics.id : cs.id, { ...e, date: daysFromNow(e.days) });
+    }
+  }
   return true;
 }
 
@@ -55,6 +70,6 @@ if (require.main === module) {
     console.log('Deleted old database.');
   }
   const db = openDatabase(config.dbPath);
-  console.log(seedIfEmpty(db) ? 'Seeded demo accounts and events.' : 'Database already has data - nothing seeded.');
+  console.log(seedIfEmpty(db, { demoExtras: true }) ? 'Seeded demo accounts and events.' : 'Database already has data - nothing seeded.');
   for (const a of DEMO_ACCOUNTS) console.log(`  ${a.role.padEnd(9)} ${a.email} / ${a.password}`);
 }

@@ -18,6 +18,12 @@
     });
   };
 
+  // Sprint 4 (US52): "$5.00", "Free" / "Demo-paid · $5.00" and category labels
+  ETMS.formatPrice = function (cents) { return '$' + (Math.round(cents) / 100).toFixed(2); };
+  ETMS.paymentText = function (ev) { return ev.paymentType === 'demo_paid' ? 'Demo-paid · ' + ETMS.formatPrice(ev.priceCents) : 'Free'; };
+  var CATEGORY_LABELS = { academic: 'Academic', arts: 'Arts & Culture', career: 'Career', social: 'Social', sports: 'Sports', tech: 'Technology', other: 'Other' };
+  ETMS.categoryLabel = function (value) { return CATEGORY_LABELS[value] || 'Other'; };
+
   ETMS.formatDate = function (date, time) {
     var parts = date.split('-').map(Number);
     var t = time.split(':').map(Number);
