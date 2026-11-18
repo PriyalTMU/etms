@@ -30,7 +30,11 @@
 
         var head = el('div', 'ticket-head');
         head.appendChild(el('h3', null, t.event.title));
-        head.appendChild(el('span', 'status-pill ' + t.status, t.upcoming ? (STATUS[t.status] || t.status) : 'Past event'));
+        // Sprint 4: cancelled tickets (US42) and cancelled events (US41) are clearly marked
+        var label = t.status === 'cancelled' ? 'Cancelled' : t.event.isCancelled ? 'Event cancelled'
+          : t.upcoming ? (STATUS[t.status] || t.status) : 'Past event';
+        head.appendChild(el('span', 'status-pill ' + (t.event.isCancelled ? 'cancelled' : t.status), label));
+        if (t.status === 'cancelled' || t.event.isCancelled) li.classList.add('is-cancelled');
         a.appendChild(head);
 
         var meta = el('div', 'event-meta');
