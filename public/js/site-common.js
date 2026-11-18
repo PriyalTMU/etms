@@ -26,9 +26,16 @@
       ' · ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   };
 
+  // Sprint 4 (US52): "$5.00", "Free" / "Demo-paid · $5.00" and category labels
+  ETMS.formatPrice = function (cents) { return '$' + (Math.round(cents) / 100).toFixed(2); };
+  ETMS.paymentText = function (ev) { return ev.paymentType === 'demo_paid' ? 'Demo-paid · ' + ETMS.formatPrice(ev.priceCents) : 'Free'; };
+  var CATEGORY_LABELS = { academic: 'Academic', arts: 'Arts & Culture', career: 'Career', social: 'Social', sports: 'Sports', tech: 'Technology', other: 'Other' };
+  ETMS.categoryLabel = function (value) { return CATEGORY_LABELS[value] || 'Other'; };
+
   // US19: "12 of 40 tickets left" / "Event full" text shared by the list and details pages.
   ETMS.availabilityText = function (ev) {
     if (ev.ticketsRemaining === undefined) return '';
+    if (ev.isCancelled) return 'Event cancelled';
     if (ev.isFull) return 'Event full';
     return ev.ticketsRemaining + ' of ' + ev.capacity + (ev.capacity === 1 ? ' ticket left' : ' tickets left');
   };

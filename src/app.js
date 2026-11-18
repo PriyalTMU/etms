@@ -8,6 +8,7 @@ const { createUserModel } = require('./models/userModel');
 const { createEventModel } = require('./models/eventModel');
 const { createTicketModel } = require('./models/ticketModel');
 const { createCheckinModel } = require('./models/checkinModel');
+const { createCheckoutModel } = require('./models/checkoutModel');
 const { createAuthRoutes } = require('./routes/authRoutes');
 const { createEventRoutes } = require('./routes/eventRoutes');
 const { createPageRoutes } = require('./routes/pageRoutes');
@@ -17,6 +18,7 @@ const { createRegistrationRoutes } = require('./routes/registrationRoutes');
 const { createTicketRoutes } = require('./routes/ticketRoutes');
 const { createVolunteerRoutes } = require('./routes/volunteerRoutes');
 const { createCheckinRoutes } = require('./routes/checkinRoutes');
+const { createCheckoutRoutes } = require('./routes/checkoutRoutes');
 
 /**
  * @param {object} options
@@ -31,10 +33,11 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
   const events = createEventModel(db);
   const tickets = createTicketModel(db);
   const checkins = createCheckinModel(db);
+  const checkouts = createCheckoutModel(db, tickets);
 
   const app = express();
   app.disable('x-powered-by');
-  app.locals.models = { users, events, tickets, checkins };
+  app.locals.models = { users, events, tickets, checkins, checkouts };
 
   app.use(express.json({ limit: '50kb' }));
   app.use(
@@ -64,13 +67,14 @@ function createApp({ db, sessionSecret, beforeRoutes, now } = {}) {
     next();
   });
 
-  if (beforeRoutes) beforeRoutes(app, { users, events, tickets, checkins });
+  if (beforeRoutes) beforeRoutes(app, { users, events, tickets, checkins, checkouts });
 
   app.use('/api', createAuthRoutes({ users }));
   app.use('/api', createStudentRoutes({ users }));
-  app.use('/api', createEventRoutes({ events }));
+  app.use('/api', createEventRoutes({ events, now }));
   app.use('/api', createRegistrationRoutes({ events, tickets, now }));
-  app.use('/api', createTicketRoutes({ tickets, now }));
+  app.use('/api', createCheckoutRoutes({ events, tickets, checkouts, now }));
+  app.use('/api', createTicketRoutes({ tickets, events, now }));
   app.use('/api', createVolunteerRoutes({ users, events, checkins }));
   app.use('/api', createCheckinRoutes({ events, checkins, now }));
   app.use('/api', createPublicEventRoutes({ events, now }));

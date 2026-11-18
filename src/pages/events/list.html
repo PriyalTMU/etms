@@ -16,10 +16,43 @@
     <h1>Upcoming campus events</h1>
     <p class="subtitle">Pick an event to see the full details.</p>
 
+    <!-- Sprint 4 - US45 keyword search · US46 category · US47 date · US48 clear -->
+    <form class="card filters" id="filter-form" role="search" novalidate>
+      <div class="filter-grid">
+        <div class="field search-field">
+          <label for="q">Search</label>
+          <div class="search-row">
+            <input id="q" name="q" type="search" maxlength="100" placeholder="Title, place or club, e.g. robotics" autocomplete="off">
+            <button class="btn" type="submit" id="search-btn">Search</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="category">Category</label>
+          <select id="category" name="category"><option value="">All categories</option></select>
+        </div>
+        <div class="field">
+          <label for="from">From date</label>
+          <input id="from" name="from" type="date">
+        </div>
+        <div class="field">
+          <label for="to">To date</label>
+          <input id="to" name="to" type="date">
+        </div>
+      </div>
+      <div class="filter-foot">
+        <p class="result-count" id="result-count" aria-live="polite"></p>
+        <button class="btn link" type="button" id="clear-filters" hidden>Clear search &amp; filters</button>
+      </div>
+    </form>
+
     <div id="list-error" class="alert error" role="alert" hidden></div>
     <p class="empty" id="loading">Loading events…</p>
     <ul class="event-list" id="event-list" aria-label="Upcoming events"></ul>
     <p class="empty" id="no-events" hidden>There are no upcoming events right now. Check back soon.</p>
+    <div class="card empty-state" id="no-results" hidden>
+      <p id="no-results-text">No events match your search.</p>
+      <button class="btn secondary" type="button" id="clear-filters-2">Clear search &amp; filters</button>
+    </div>
   </main>
 
   <script src="/js/site-common.js"></script>
