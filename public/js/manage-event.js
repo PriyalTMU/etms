@@ -37,7 +37,11 @@
         var ev = r.body.event;
         document.title = ev.title + ' · Manage · ETMS';
         document.getElementById('ev-title').textContent = ev.title;
-        document.getElementById('ev-meta').textContent = ETMS.formatDate(ev.date, ev.time) + ' · ' + ev.location + ' · Capacity ' + ev.capacity;
+        document.getElementById('ev-meta').textContent = ETMS.formatDate(ev.date, ev.time) + ' · ' + ev.location + ' · Capacity ' + ev.capacity +
+          ' · ' + (ev.paymentType === 'demo_paid' ? 'Demo-paid ' + ETMS.formatPrice(ev.priceCents) : 'Free');
+        document.getElementById('edit-event').href = '/organizer/events/' + ev.id + '/edit';
+        if (new URLSearchParams(location.search).get('updated')) document.getElementById('updated-msg').hidden = false;
+        if (ETMS.onEventStatus) ETMS.onEventStatus(ev);
         document.getElementById('open-checkin').href = '/checkin/events/' + ev.id;
         document.getElementById('student-view').href = '/events/' + ev.id;
         document.getElementById('event-head').hidden = false;

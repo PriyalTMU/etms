@@ -21,7 +21,37 @@
     CAPACITY_MAX: 5000,
   };
 
+  // Sprint 4: US46 categories · US51 free / demo-paid with a demo price (no real money)
+  var CATEGORIES = [
+    { value: 'academic', label: 'Academic' },
+    { value: 'arts', label: 'Arts & Culture' },
+    { value: 'career', label: 'Career' },
+    { value: 'social', label: 'Social' },
+    { value: 'sports', label: 'Sports' },
+    { value: 'tech', label: 'Technology' },
+    { value: 'other', label: 'Other' },
+  ];
+  var PAYMENT_TYPES = [
+    { value: 'free', label: 'Free' },
+    { value: 'demo_paid', label: 'Demo-paid' },
+  ];
+  var PRICE_MIN_CENTS = 50;      // $0.50
+  var PRICE_MAX_CENTS = 50000;   // $500.00
+
+  function categoryLabel(value) {
+    for (var i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].value === value) return CATEGORIES[i].label;
+    return 'Other';
+  }
+
+  /** 500 -> "$5.00" */
+  function formatPrice(cents) {
+    return '$' + (Math.round(cents) / 100).toFixed(2);
+  }
+
   var FIELD_LABELS = {
+    category: 'Category',
+    paymentType: 'Payment type',
+    price: 'Demo price',
     title: 'Title',
     description: 'Description',
     date: 'Date',
@@ -63,9 +93,10 @@
    *   errors is keyed by field name with an understandable message;
    *   values holds the cleaned-up data (trimmed strings, capacity as a number).
    */
-  function validateEvent(input, now) {
+  function validateEvent(input, now, options) {
     input = input || {};
     now = now || new Date();
+    options = options || {};
     var errors = {};
 
     var title = asText(input.title);
@@ -130,10 +161,44 @@
       }
     }
 
+    // US39: when editing, capacity can't go below the tickets that are already issued
+    if (!errors.capacity && capacity !== null && options.minCapacity && capacity < options.minCapacity) {
+      errors.capacity = 'Maximum capacity cannot be lower than the ' + options.minCapacity +
+        (options.minCapacity === 1 ? ' ticket' : ' tickets') + ' already issued.';
+    }
+
+    // US46: category (optional for older API clients -> "other"; anything unknown is rejected)
+    var category = asText(input.category) || 'other';
+    if (!CATEGORIES.some(function (c) { return c.value === category; })) {
+      errors.category = 'Choose a category from the list.';
+    }
+
+    // US51: free or demo-paid (missing -> free; anything else is rejected)
+    var paymentType = asText(input.paymentType) || 'free';
+    var priceCents = 0;
+    if (!PAYMENT_TYPES.some(function (p) { return p.value === paymentType; })) {
+      errors.paymentType = 'Choose whether the event is Free or Demo-paid.';
+    } else if (paymentType === 'demo_paid') {
+      var priceRaw = asText(input.price).replace(/^\$/, '');
+      if (priceRaw === '') {
+        errors.price = 'Enter a demo price for a demo-paid event (for example 5.00).';
+      } else if (!/^\d{1,3}(\.\d{1,2})?$/.test(priceRaw)) {
+        errors.price = 'Enter the demo price as a number of dollars, for example 5 or 12.50.';
+      } else {
+        priceCents = Math.round(Number(priceRaw) * 100);
+        if (priceCents < PRICE_MIN_CENTS || priceCents > PRICE_MAX_CENTS) {
+          errors.price = 'The demo price must be between ' + formatPrice(PRICE_MIN_CENTS) + ' and ' + formatPrice(PRICE_MAX_CENTS) + '.';
+        }
+      }
+    }
+
     return {
       valid: Object.keys(errors).length === 0,
       errors: errors,
       values: {
+        category: category,
+        paymentType: paymentType,
+        priceCents: paymentType === 'demo_paid' ? priceCents : 0,
         title: title,
         description: description,
         date: date,
@@ -146,6 +211,10 @@
 
   return {
     validateEvent: validateEvent,
+    CATEGORIES: CATEGORIES,
+    PAYMENT_TYPES: PAYMENT_TYPES,
+    categoryLabel: categoryLabel,
+    formatPrice: formatPrice,
     LIMITS: LIMITS,
     FIELD_LABELS: FIELD_LABELS,
     localDateString: localDateString,

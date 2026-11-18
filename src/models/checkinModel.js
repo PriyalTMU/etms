@@ -8,7 +8,8 @@ const RESULT = Object.freeze({
   INVALID: 'INVALID', // no ticket with that code
   WRONG_EVENT: 'WRONG_EVENT', // real ticket, but for another event
   ALREADY_USED: 'ALREADY_USED', // ticket was already checked in
-  CANCELLED: 'CANCELLED', // ticket was cancelled (Sprint 4 feature, handled here already)
+  CANCELLED: 'CANCELLED', // ticket was cancelled by the student (US42)
+  EVENT_CANCELLED: 'EVENT_CANCELLED', // the whole event was cancelled by its organizer (US41)
 });
 
 function createCheckinModel(db) {
@@ -25,7 +26,7 @@ function createCheckinModel(db) {
      WHERE a.volunteer_id = ? ORDER BY e.event_date, e.event_time, e.id`
   );
   const ticketByCodeStmt = db.prepare(
-    `SELECT t.*, s.name AS holder_name, e.title AS event_title, e.event_date, e.event_time
+    `SELECT t.*, s.name AS holder_name, e.title AS event_title, e.event_date, e.event_time, e.status AS event_status
      FROM tickets t JOIN users s ON s.id = t.student_id JOIN events e ON e.id = t.event_id
      WHERE t.ticket_code = ?`
   );
@@ -110,6 +111,7 @@ function createCheckinModel(db) {
 
         const ticket = { code: t.ticket_code, holderName: t.holder_name, eventId: t.event_id, eventTitle: t.event_title };
         if (t.event_id !== eventId) return { result: RESULT.WRONG_EVENT, ticket };
+        if (t.event_status === 'cancelled') return { result: RESULT.EVENT_CANCELLED, ticket };
         if (t.status === 'cancelled') return { result: RESULT.CANCELLED, ticket };
 
         const previous = checkinForTicketStmt.get(t.id);

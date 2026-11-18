@@ -21,7 +21,7 @@
 
       <div id="form-errors" class="alert error" role="alert" tabindex="-1" hidden></div>
 
-      <form id="event-form" novalidate>
+      <form id="event-form" data-mode="create" novalidate>
         <div class="field" data-field="title">
           <label for="title">Title <span class="req">*</span></label>
           <input id="title" name="title" type="text" maxlength="100" aria-describedby="title-error">
@@ -60,6 +60,32 @@
             <div class="hint">Whole number from 1 to 5000.</div>
             <div class="field-error" id="capacity-error"></div>
           </div>
+        </div>
+
+        <!-- Sprint 4: US46 category · US51 free or demo-paid -->
+        <div class="row">
+          <div class="field" data-field="category">
+            <label for="category">Category <span class="req">*</span></label>
+            <select id="category" name="category" aria-describedby="category-error"></select>
+            <div class="hint">Students can filter the event list by category.</div>
+            <div class="field-error" id="category-error"></div>
+          </div>
+          <fieldset class="field" data-field="paymentType">
+            <legend>Payment type <span class="req">*</span></legend>
+            <div class="radio-row">
+              <label class="radio"><input type="radio" name="paymentType" id="pay-free" value="free" checked> Free</label>
+              <label class="radio"><input type="radio" name="paymentType" id="pay-demo" value="demo_paid"> Demo-paid</label>
+            </div>
+            <div class="hint">Demo-paid events use a simulated checkout. No real payment is ever taken.</div>
+            <div class="field-error" id="paymentType-error"></div>
+          </fieldset>
+        </div>
+
+        <div class="field" data-field="price" id="price-field" hidden>
+          <label for="price">Demo price (CAD) <span class="req">*</span></label>
+          <div class="input-prefix"><span>$</span><input id="price" name="price" type="text" inputmode="decimal" placeholder="5.00" maxlength="6" aria-describedby="price-error"></div>
+          <div class="hint">Between $0.50 and $500.00. Shown to students; nobody is ever charged.</div>
+          <div class="field-error" id="price-error"></div>
         </div>
 
         <div class="actions">
