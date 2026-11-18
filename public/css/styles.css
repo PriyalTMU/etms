@@ -217,8 +217,9 @@ fieldset.field legend { font-weight: 600; margin-bottom: 6px; font-size: .95rem;
 .result-count { margin: 0; color: var(--muted); font-size: .9rem; }
 .badge-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
 .badge-row .availability { margin-top: 0; }
-@media (max-width: 760px) { .filter-grid { grid-template-columns: 1fr 1fr; } .search-field { grid-column: 1 / -1; } }
-@media (max-width: 420px) { .filter-grid { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .filter-grid { grid-template-columns: 1fr 1fr; } .search-field, .filter-grid .field:nth-child(2) { grid-column: 1 / -1; } }
+/* D14 fix: keep the filter panel short on phones - dates side by side, tighter spacing */
+@media (max-width: 420px) { .filters { padding: 12px; } .filter-grid { gap: 8px; } .filter-grid label { font-size: .85rem; margin-bottom: 3px; } .filter-grid input, .filter-grid select { padding: 8px 10px; } }
 
 .cancel-ticket { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 14px; }
 .cancel-ticket h2 { font-size: 1rem; margin-bottom: 4px; }
