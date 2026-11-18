@@ -39,6 +39,17 @@
       document.getElementById('ev-location').textContent = ev.location;
       document.getElementById('ev-capacity').textContent = ev.capacity + (ev.capacity === 1 ? ' person' : ' people');
       document.getElementById('ev-description').textContent = ev.description;
+      // Sprint 4 - US46 category · US52 free or demo-paid · US41 cancelled
+      document.getElementById('ev-category').textContent = ETMS.categoryLabel(ev.category);
+      document.getElementById('ev-price').textContent = ev.paymentType === 'demo_paid'
+        ? ETMS.formatPrice(ev.priceCents) + ' · Demo-paid (simulated checkout, no real payment)'
+        : 'Free';
+      var cancelled = document.getElementById('ev-cancelled');
+      if (ev.isCancelled) {
+        cancelled.textContent = 'This event has been cancelled by the organizer.' + (ev.cancelReason ? ' Reason: ' + ev.cancelReason : '');
+        cancelled.hidden = false;
+        card.classList.add('is-cancelled');
+      }
       showAvailability(ev);
       loading.hidden = true;
       card.hidden = false;
@@ -81,6 +92,11 @@
       actions.appendChild(link('All my tickets', '/my-tickets', 'btn secondary'));
       return;
     }
+    // US41 / US50: cancelled events can't be registered for
+    if (state.cancelled) {
+      message('This event has been cancelled by the organizer, so registration is closed.' + (state.cancelReason ? ' Reason: ' + state.cancelReason : ''), 'error');
+      return;
+    }
     if (state.started) { message('Registration is closed because this event has already started.', 'error'); return; }
     if (state.role === 'organizer') { message('Organizer accounts cannot register for events. Log in with a student account to get a ticket.'); return; }
     if (state.isFull) {
@@ -99,11 +115,50 @@
       return;
     }
 
+    // US52: demo-paid events go to the simulated checkout (US53) instead of registering straight away
+    if (state.paymentType === 'demo_paid') {
+      message('This is a demo-paid event (' + ETMS.formatPrice(state.priceCents) + '). You will go through a simulated checkout – no real payment is taken.', 'info');
+      var pay = el('button', 'btn big', 'Continue to demo checkout');
+      pay.type = 'button';
+      pay.id = 'checkout-btn';
+      pay.addEventListener('click', function () { startCheckout(pay, state); });
+      actions.appendChild(pay);
+      return;
+    }
+
     var btn = el('button', 'btn big', 'Register for this event');
     btn.type = 'button';
     btn.id = 'register-btn';
     btn.addEventListener('click', function () { register(btn); });
     actions.appendChild(btn);
+  }
+
+  /** US50: every failed registration/checkout shows its reason; nothing is issued. */
+  function showFailure(body, status, state) {
+    if (body.event && ETMS.showAvailability) ETMS.showAvailability(body.event);
+    if (body.code === 'ALREADY_REGISTERED') { render({ ticketCode: body.ticketCode }); message(body.error, 'info'); return; }
+    if (body.code === 'EVENT_FULL') { render({ role: 'student', isFull: true }); return; }
+    if (body.code === 'EVENT_CANCELLED') { render({ role: 'student', cancelled: true }); return; }
+    if (body.code === 'EVENT_STARTED') { render({ role: 'student', started: true }); return; }
+    if (status === 401) { render({ role: null }); return; }
+    render(state || { role: 'student' });
+    message(body.error || 'Registration failed. Please try again.', 'error');
+  }
+
+  // US53: start (or reopen) a simulated checkout for a demo-paid event
+  function startCheckout(btn, state) {
+    btn.disabled = true;
+    btn.textContent = 'Opening checkout…';
+    fetch('/api/events/' + id + '/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+      .then(function (r) { return r.json().then(function (b) { return { status: r.status, body: b }; }); })
+      .then(function (r) {
+        if (r.status === 200 || r.status === 201) { location.href = r.body.redirect; return; }
+        showFailure(r.body, r.status, state);
+      })
+      .catch(function () {
+        render(state);
+        message('Could not reach the server. Please try again.', 'error');
+      });
   }
 
   function register(btn) {
@@ -113,12 +168,8 @@
       .then(function (r) { return r.json().then(function (b) { return { status: r.status, body: b }; }); })
       .then(function (r) {
         if (r.status === 201) { location.href = r.body.redirect; return; }
-        if (r.body.event && ETMS.showAvailability) ETMS.showAvailability(r.body.event);
-        if (r.body.code === 'ALREADY_REGISTERED') { render({ ticketCode: r.body.ticketCode }); message(r.body.error, 'info'); return; }
-        if (r.body.code === 'EVENT_FULL') { render({ role: 'student', isFull: true }); return; }
-        if (r.status === 401) { render({ role: null }); return; }
-        render({ role: 'student' });
-        message(r.body.error || 'Registration failed. Please try again.', 'error');
+        if (r.body.code === 'PAYMENT_REQUIRED') { loadState(); return; }
+        showFailure(r.body, r.status);
       })
       .catch(function () {
         render({ role: 'student' });
@@ -126,8 +177,11 @@
       });
   }
 
-  fetch('/api/events/' + id + '/registration')
-    .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-    .then(render)
-    .catch(function () {});
+  function loadState() {
+    return fetch('/api/events/' + id + '/registration')
+      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+      .then(render)
+      .catch(function () {});
+  }
+  loadState();
 })();

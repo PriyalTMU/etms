@@ -19,6 +19,8 @@
     <p class="empty" id="loading">Loading event…</p>
 
     <article class="card" id="event-details" hidden>
+      <!-- Sprint 4 - US41: cancelled events are clearly marked -->
+      <div class="alert cancelled-banner" id="ev-cancelled" role="status" hidden></div>
       <p class="club" id="ev-club"></p>
       <h1 id="ev-title"></h1>
       <dl class="details-grid">
@@ -27,6 +29,8 @@
         <div><dt>Location</dt><dd id="ev-location"></dd></div>
         <div><dt>Capacity</dt><dd id="ev-capacity"></dd></div>
         <div><dt>Tickets left</dt><dd id="ev-availability"></dd></div>
+        <div><dt>Category</dt><dd id="ev-category"></dd></div>
+        <div><dt>Price</dt><dd id="ev-price"></dd></div>
       </dl>
       <h2>About this event</h2>
       <p class="description" id="ev-description"></p>

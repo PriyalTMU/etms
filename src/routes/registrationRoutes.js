@@ -14,6 +14,8 @@ function parseEventId(raw) {
   return /^\d+$/.test(raw) && Number(raw) > 0 ? Number(raw) : null;
 }
 
+const CANCELLED_MSG = 'This event has been cancelled by the organizer, so registration is closed.';
+
 function createRegistrationRoutes({ events, tickets, now = () => new Date() }) {
   const router = express.Router();
 
@@ -38,8 +40,19 @@ function createRegistrationRoutes({ events, tickets, now = () => new Date() }) {
     const id = parseEventId(req.params.id);
     const event = id && events.findById(id);
     if (!event) return res.status(404).json({ error: 'Event not found.' });
+    // US41 / US50: a cancelled event never issues tickets
+    if (event.isCancelled) {
+      return res.status(409).json({ error: CANCELLED_MSG, code: 'EVENT_CANCELLED' });
+    }
     if (hasStarted(event)) {
       return res.status(400).json({ error: 'Registration is closed because this event has already started.', code: 'EVENT_STARTED' });
+    }
+    // US52: demo-paid events go through the simulated checkout instead (US53)
+    if (event.paymentType === 'demo_paid') {
+      return res.status(409).json({
+        error: 'This is a demo-paid event. Continue to the demo checkout to get your ticket.',
+        code: 'PAYMENT_REQUIRED',
+      });
     }
 
     const result = tickets.register(event.id, user.id, event.capacity);
@@ -77,10 +90,15 @@ function createRegistrationRoutes({ events, tickets, now = () => new Date() }) {
       isFull: event.isFull,
       ticketsRemaining: event.ticketsRemaining,
       started: hasStarted(event),
+      // Sprint 4
+      cancelled: event.isCancelled,
+      cancelReason: event.cancelReason,
+      paymentType: event.paymentType,
+      priceCents: event.priceCents,
     });
   });
 
   return router;
 }
 
-module.exports = { createRegistrationRoutes };
+module.exports = { createRegistrationRoutes, CANCELLED_MSG };

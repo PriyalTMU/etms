@@ -16,10 +16,12 @@
     <p><a href="/my-tickets">&larr; All my tickets</a></p>
 
     <div id="new-msg" class="alert success" role="status" hidden>You're registered! Your ticket is below. Show the QR code at the door.</div>
+    <div id="cancel-done" class="alert success" role="status" hidden></div>
     <div id="ticket-error" class="alert error" role="alert" hidden></div>
     <p class="empty" id="loading">Loading ticket…</p>
 
     <article class="card e-ticket" id="ticket" hidden>
+      <div class="alert cancelled-banner" id="tk-event-cancelled" role="status" hidden></div>
       <div class="ticket-head">
         <p class="club" id="tk-club"></p>
         <span class="status-pill" id="tk-status"></span>
@@ -31,7 +33,8 @@
         <div><dt>Location</dt><dd id="tk-location"></dd></div>
         <div><dt>Ticket holder</dt><dd id="tk-holder"></dd></div>
       </dl>
-      <div class="qr-wrap">
+      <div class="qr-wrap" id="qr-wrap">
+        <p class="void-stamp" id="tk-void" hidden>Cancelled – not valid for entry</p>
         <img id="tk-qr" alt="QR code for this ticket" width="240" height="240">
         <p class="ticket-code" id="tk-code"></p>
         <p class="hint">Show this QR code (or read out the ticket code) at the event entrance.</p>
@@ -40,6 +43,21 @@
         <a class="btn secondary" id="tk-event-link" href="/events">View event details</a>
         <button class="btn link" type="button" id="tk-print">Print ticket</button>
       </div>
+
+      <!-- Sprint 4 - US42 cancel my ticket · US44 confirmation or reason -->
+      <section class="cancel-ticket no-print" id="cancel-section" hidden>
+        <h2>Can't make it?</h2>
+        <p class="hint">Cancel your ticket so another student can have your spot. This can't be undone.</p>
+        <button class="btn danger" type="button" id="cancel-ticket-btn">Cancel my ticket…</button>
+        <div id="cancel-confirm-box" hidden>
+          <p><strong>Cancel your ticket for <span id="cancel-event-name"></span>?</strong></p>
+          <div class="actions">
+            <button class="btn danger" type="button" id="cancel-ticket-confirm">Yes, cancel my ticket</button>
+            <button class="btn secondary" type="button" id="cancel-ticket-keep">Keep my ticket</button>
+          </div>
+        </div>
+        <div id="cancel-error" class="alert error" role="alert" hidden></div>
+      </section>
     </article>
   </main>
 
