@@ -50,7 +50,7 @@ The first time the server starts it creates `data/etms.db` and fills it with dem
 |---|---|
 | `npm start` | Run the server |
 | `npm run dev` | Run the server and restart on file changes |
-| `npm test` | Run all 127 automated tests (uses an in-memory DB, does not touch your data) |
+| `npm test` | Run all 307 automated tests (uses an in-memory DB, does not touch your data) |
 | `npm run seed` | Add demo data if the database is empty |
 | `npm run reset-db` | Delete the local database and re-create the demo data |
 | `npm run demo` | Reset to clean demo data, then start the server (use before presenting) |
@@ -68,7 +68,7 @@ etms/
 │   ├── app.js               Builds the Express app (used by server.js and the tests)
 │   ├── config.js            PORT, SESSION_SECRET, DB_PATH (from .env or defaults)
 │   ├── db/                  schema.sql, database.js (connection), seed.js (demo data)
-│   ├── models/              userModel.js, eventModel.js, ticketModel.js (Sprint 2), checkinModel.js (Sprint 3)
+│   ├── models/              userModel.js, eventModel.js, ticketModel.js (Sprint 2), checkinModel.js (Sprint 3), checkoutModel.js (Sprint 4)
 │   ├── middleware/auth.js   requireRole / requireRolePage (role-based access)
 │   ├── routes/              auth, student, event, public event, registration + ticket (Sprint 2), page routes
 │   ├── shared/              eventValidation.js, accountValidation.js – used by BOTH server and browser
@@ -96,6 +96,12 @@ etms/
 | `GET /api/my/tickets` | student | The logged-in student's tickets with event info, soonest first |
 | `GET /api/tickets/:code` | student (owner) | One ticket with event info and its QR code (`qrSvg`); anyone else gets `404 Ticket not found.` |
 | `GET /api/organizer/events/:id/volunteers` | organizer (own event) | The event and its check-in volunteers (Sprint 3) |
+| `GET /api/events?q=&category=&from=&to=` | anyone | Upcoming events, optionally searched/filtered (Sprint 4) |
+| `GET /api/organizer/events/:id` · `PUT /api/organizer/events/:id` | organizer (own event) | Load / save an edit (Sprint 4) |
+| `POST /api/organizer/events/:id/cancel` | organizer (own event) | Cancel an event `{ reason? }` (Sprint 4) |
+| `POST /api/tickets/:code/cancel` | student (own ticket) | Cancel a ticket (Sprint 4) |
+| `POST /api/events/:id/checkout` | student | Start (or reopen) a demo checkout for a demo-paid event (Sprint 4) |
+| `GET /api/checkout/:token` · `POST …/complete` · `…/decline` · `…/cancel` | student (own checkout) | Simulated checkout (Sprint 4) |
 | `POST /api/organizer/events/:id/volunteers` | organizer (own event) | `{ email }` of a **student** account → gives check-in access for this event. `201` · `400` bad/organizer email · `404` no such student · `409` already added |
 | `GET /api/organizer/events/:id/tickets` | organizer (own event) | `{ summary: { issued, checkedIn, notCheckedIn }, tickets: [{ holderName, code, status, registeredAt, checkedInAt, checkedInBy }] }` |
 | `GET /api/checkin/events` | logged in | Events this user can run check-in for (assigned volunteer, or own events for organizers) |
@@ -119,6 +125,35 @@ Pages: `/signup` (create student account), `/login` (student login), `/organizer
 - One branch per story: `feature/US08-create-event`, `fix/...` for bugs.
 - `git pull` before starting work, commit small and often, run `npm test` before opening a PR.
 - Open a Pull Request into `main`, a teammate reviews, then merge.
+
+## Sprint 4 documents
+
+- [`docs/SPRINT4-TEST-REPORT.md`](docs/SPRINT4-TEST-REPORT.md) – Sprint 4 story, repeated-action, end-to-end and phone-width results, defects D13–D15
+- [`docs/DEMO-SCRIPT-SPRINT4.md`](docs/DEMO-SCRIPT-SPRINT4.md) – Sprint 4 Review demo
+- `docs/screenshots/sprint4/` – screenshots of every Sprint 4 screen (desktop and phone)
+
+## Sprint 4 progress
+
+| Story | Owner | What it does | Tests |
+|---|---|---|---|
+| US39 Edit an event | Priyal | `/organizer/events/:id/edit` – same form and rules as creating; own events only; capacity can't drop below tickets issued | `us39-edit-event` |
+| US40 Changes appear to students | Aneesa | List, details, tickets and My Tickets show edits straight away (no caching) | `us40-changes-visible` |
+| US41 Cancel an event | Priyal | Two-step cancel with optional reason; kept and marked cancelled; registration, checkout, editing and check-in stop | `us41-cancel-event` |
+| US42 Cancel my ticket | Aneesa | `POST /api/tickets/:code/cancel` – own active tickets before the event; not once checked in | `us42-us43-cancel-ticket` |
+| US43 Restore availability | Aneesa | Cancelled tickets stop counting, so the spot goes back at once | `us42-us43-cancel-ticket` |
+| US44 Cancellation confirmation | Aneesa | Green confirmation naming the event; ticket marked "Cancelled – not valid for entry"; clear reasons when it can't be cancelled | `us44-cancellation-confirmation` |
+| US45 Keyword search | Priyal | `GET /api/events?q=` – title, description, location and club | `us45-search` |
+| US46 Category filter | Ravi | `?category=` – Academic, Arts & Culture, Career, Social, Sports, Technology, Other | `us46-us47-us48-filters` |
+| US47 Date filter | Ravi | `?from=&to=` (YYYY-MM-DD, inclusive) | `us46-us47-us48-filters` |
+| US48 Clear filters | Ravi | One button resets everything; the search is kept in the address bar | `us46-us47-us48-filters` |
+| US49 Registration confirmation | Aneesa | The new ticket page names the event and the ticket code | `us49-us50-registration-messages` |
+| US50 Failure reasons | Aneesa | Full, already registered, cancelled, demo-paid, started, logged out, organizer – each with its own message; no ticket created | `us49-us50-registration-messages` |
+| US51 Free or demo-paid | Priyal | Create/edit form: Free or Demo-paid with a demo price ($0.50–$500) | `us51-us52-payment-type` |
+| US52 Status shown to students | Priyal | Badges on the list and a Price row on details; demo-paid events go to checkout | `us51-us52-payment-type` |
+| US53 Simulated checkout | Ravi | `/checkout/:token` – complete, simulate a declined payment, or cancel; no card details ever | `us53-us54-demo-checkout` |
+| US54 Ticket after checkout | Ravi | Exactly one ticket per completed checkout (even with repeated clicks), with code + QR | `us53-us54-demo-checkout` |
+
+Sprint 4 database changes are applied automatically when the app starts: a database from Sprint 3 keeps all its data (new columns `category`, `payment_type`, `price_cents`, `status`, `cancelled_at`, `cancel_reason`, `updated_at`; new table `checkouts`).
 
 ## Sprint 3 documents
 
