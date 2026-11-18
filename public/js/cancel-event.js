@@ -16,8 +16,11 @@
     banner.textContent = 'This event was cancelled' + (ev.cancelledAt ? ' on ' + new Date(ev.cancelledAt).toLocaleString() : '') +
       '. Students see it as cancelled and cannot register.' + (ev.cancelReason ? ' Reason: ' + ev.cancelReason : '');
     banner.hidden = false;
-    var edit = document.getElementById('edit-event');
-    if (edit) edit.hidden = true;
+    // D15 fix: nothing to check in or volunteer for once the event is cancelled
+    ['edit-event', 'open-checkin', 'volunteer-form'].forEach(function (id) {
+      var x = document.getElementById(id);
+      if (x) x.hidden = true;
+    });
   }
 
   ETMS.onEventStatus = function (ev) {

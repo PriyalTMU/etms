@@ -15,6 +15,16 @@
   var latest = 0; // only the newest request may update the page (typing fast can't show stale results)
   var categoriesLoaded = false;
 
+  // D13 fix: build the category list from the shared list right away, so a category in the
+  // address bar (after a refresh or from a shared link) can be selected before the first search.
+  if (window.EventValidation) {
+    EventValidation.CATEGORIES.forEach(function (c) {
+      var o = el('option', null, c.label);
+      o.value = c.value;
+      form.category.appendChild(o);
+    });
+    categoriesLoaded = true;
+  }
 
   function current() {
     var f = {};
