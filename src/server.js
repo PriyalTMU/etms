@@ -14,7 +14,7 @@ const { createApp } = require('./app');
 const { seedIfEmpty } = require('./db/seed');
 
 const db = openDatabase(config.dbPath);
-seedIfEmpty(db);
+seedIfEmpty(db, { demoExtras: true });
 
 const app = createApp({ db, sessionSecret: config.sessionSecret });
 

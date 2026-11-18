@@ -58,6 +58,18 @@ function createPageRoutes({ events, checkins } = {}) {
     res.sendFile(path.join(PAGES, 'student', 'ticket.html'));
   });
 
+  // Sprint 4 (US39): edit one of my events - the API refuses other organizers' events
+  router.get('/organizer/events/:id/edit', organizerPage, (req, res, next) => {
+    if (!/^\d+$/.test(req.params.id)) return next();
+    res.sendFile(path.join(PAGES, 'organizer', 'edit-event.html'));
+  });
+
+  // Sprint 4 (US53): demo checkout page - students only; the API refuses other students' checkouts
+  router.get('/checkout/:token', studentPage, (req, res) => {
+    res.set('Cache-Control', 'no-store, private');
+    res.sendFile(path.join(PAGES, 'student', 'checkout.html'));
+  });
+
   // Sprint 3: organizer's page for one event - check-in volunteers (US29) and attendance (US37, US38)
   router.get('/organizer/events/:id', organizerPage, (req, res, next) => {
     if (!/^\d+$/.test(req.params.id)) return next();

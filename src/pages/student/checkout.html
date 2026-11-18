@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demo checkout · ETMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="inner">
+    <a class="brand" href="/">ETMS <span>Campus Events</span></a>
+    <div class="who" id="site-who"></div>
+  </div></header>
+
+  <main class="container" style="max-width: 640px">
+    <p><a href="/events" id="back-to-event">&larr; Back to the event</a></p>
+
+    <!-- Sprint 4 - US53 simulated checkout (no real payment, no card details) -->
+    <div class="demo-banner" role="note">
+      <strong>DEMO CHECKOUT – no real payment.</strong>
+      Nothing is charged and no card details are asked for or stored. This only shows how a paid-event registration would work.
+    </div>
+
+    <div id="checkout-error" class="alert error" role="alert" hidden></div>
+    <p class="empty" id="loading">Loading checkout…</p>
+
+    <article class="card" id="checkout" hidden>
+      <h1>Checkout</h1>
+      <p class="club" id="co-club"></p>
+      <h2 id="co-title"></h2>
+      <p class="muted" id="co-when"></p>
+      <table class="order-table">
+        <tbody>
+          <tr><td>1 × event ticket</td><td class="amount" id="co-price"></td></tr>
+          <tr class="total"><td>Total (demo – not charged)</td><td class="amount" id="co-total"></td></tr>
+        </tbody>
+      </table>
+
+      <div id="co-result" class="alert" role="status" aria-live="polite" hidden></div>
+
+      <div class="actions" id="co-actions">
+        <button class="btn big" type="button" id="co-pay">Complete demo payment</button>
+        <button class="btn secondary" type="button" id="co-decline">Simulate a declined payment</button>
+        <button class="btn link" type="button" id="co-cancel">Cancel checkout</button>
+      </div>
+      <div class="actions" id="co-after" hidden>
+        <button class="btn" type="button" id="co-retry">Try again</button>
+        <a class="btn secondary" id="co-event-link" href="/events">Back to the event</a>
+      </div>
+    </article>
+  </main>
+
+  <script src="/js/site-common.js"></script>
+  <script src="/js/checkout.js"></script>
+</body>
+</html>
